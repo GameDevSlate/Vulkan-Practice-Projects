@@ -1,4 +1,7 @@
+#pragma warning(push, 0)
 #include<vulkan/vulkan.hpp>
+#pragma warning(pop)
+
 #include <GLFW/glfw3.h>
 
 #define GLM_FORCE_RADIANS
