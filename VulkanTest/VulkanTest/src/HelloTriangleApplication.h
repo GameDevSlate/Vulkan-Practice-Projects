@@ -37,4 +37,5 @@ private:
 	GLFWwindow* m_window;
 	vk::Instance m_instance;
 	vk::DebugUtilsMessengerEXT m_debugMessenger;
+	vk::PhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
 };

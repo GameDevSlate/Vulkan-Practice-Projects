@@ -3,6 +3,7 @@
 #include "HelloTriangleApplication.h"
 #include"ValidationLayers.h"
 #include"DebugUtils.h"
+#include"PhysicalDevice.h"
 #include<iostream>
 
 void HelloTriangleApplication::Run()
@@ -31,6 +32,7 @@ void HelloTriangleApplication::InitVulkan()
 {
 	CreateInstance();
 	DebugUtils::SetupDebugMessenger(m_instance, m_debugMessenger);
+	PhysicalDevice::PickPhysicalDevice(m_instance, m_physicalDevice);
 }
 
 void HelloTriangleApplication::CreateInstance()

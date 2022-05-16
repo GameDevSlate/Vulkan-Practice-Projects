@@ -163,12 +163,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\PhysicalDevice.cpp" />
     <ClCompile Include="src\DebugUtils.cpp" />
     <ClCompile Include="src\HelloTriangleApplication.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ValidationLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\PhysicalDevice.h" />
     <ClInclude Include="src\DebugUtils.h" />
     <ClInclude Include="src\HelloTriangleApplication.h" />
     <ClInclude Include="src\ValidationLayers.h" />
