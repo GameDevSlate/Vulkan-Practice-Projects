@@ -165,9 +165,11 @@
   <ItemGroup>
     <ClCompile Include="src\HelloTriangleApplication.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ValidationLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HelloTriangleApplication.h" />
+    <ClInclude Include="src\ValidationLayers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

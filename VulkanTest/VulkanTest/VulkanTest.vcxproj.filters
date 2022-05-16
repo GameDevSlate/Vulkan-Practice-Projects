@@ -21,9 +21,15 @@
     <ClCompile Include="src\HelloTriangleApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ValidationLayers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HelloTriangleApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ValidationLayers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
