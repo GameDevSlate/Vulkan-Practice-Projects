@@ -64,9 +64,45 @@ int PhysicalDevice::RateDeviceSuitability(vk::PhysicalDevice device)
 	// Maximum possible size of textures affects graphics quality
 	score += deviceProperties.limits.maxImageDimension2D;
 
+	// Add to the score if it has a graphics queue family
+	QueueFamilyIndices indices = FindQueueFamilies(device);
+
+	if (indices.isComplete())
+		score += indices.graphicsFamily.value();
+
 	// Application can't function without geomerty shaders
 	if (!deviceFeatures.geometryShader)
 		return 0;
 
 	return score;
+}
+
+// This is a mouthfull because the first PhysicalDevice is to indicate the class file,
+// and the second is for the actual class object itself
+PhysicalDevice::PhysicalDevice::QueueFamilyIndices PhysicalDevice::FindQueueFamilies(vk::PhysicalDevice device)
+{
+	QueueFamilyIndices indices;
+	
+	// Logic to find queue family indices to populate struct with
+	uint32_t queueFamilyCount = 0;
+
+	device.getQueueFamilyProperties(&queueFamilyCount, nullptr);
+
+	std::vector<vk::QueueFamilyProperties> queueFamilies(queueFamilyCount);
+
+	device.getQueueFamilyProperties(&queueFamilyCount, queueFamilies.data());
+
+	int i = 0;
+	for (const auto& queueFamily : queueFamilies) {
+		// Check that one of the queue families has the graphics bit flag (VK_QUEUE_GRAPHICS_BIT)
+		if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
+			indices.graphicsFamily = i;
+
+		if (indices.isComplete())
+			break;
+
+		i++;
+	}
+
+	return indices;
 }
