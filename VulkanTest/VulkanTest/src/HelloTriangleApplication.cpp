@@ -4,6 +4,7 @@
 #include"ValidationLayers.h"
 #include"DebugUtils.h"
 #include"PhysicalDevice.h"
+#include"LogicalDevice.h"
 #include<iostream>
 
 void HelloTriangleApplication::Run()
@@ -33,6 +34,7 @@ void HelloTriangleApplication::InitVulkan()
 	CreateInstance();
 	DebugUtils::SetupDebugMessenger(m_instance, m_debugMessenger);
 	PhysicalDevice::PickPhysicalDevice(m_instance, m_physicalDevice);
+	LogicalDevice::CreateLogicalDevice(m_instance, m_physicalDevice, m_device, m_graphicsQueue);
 }
 
 void HelloTriangleApplication::CreateInstance()
@@ -109,6 +111,9 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 
 void HelloTriangleApplication::CleanUp()
 {
+	//Destroy Logical Device
+	m_device.destroy(nullptr);
+
 	// Destroy Debug utility
 	if (ValidationLayers::enableValidationLayers)
 		DebugUtils::DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);

@@ -2,8 +2,10 @@
 
 #include<vulkan/vulkan.hpp>
 #include<optional>
+#include"LogicalDevice.h"
 class PhysicalDevice
 {
+
 public:
 	static void PickPhysicalDevice(vk::Instance instance, vk::PhysicalDevice& physicalDevice);
 
@@ -23,5 +25,10 @@ private:
 	static int RateDeviceSuitability(vk::PhysicalDevice device);
 	
 	static QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice device);
+
+	friend void LogicalDevice::CreateLogicalDevice(	vk::Instance instance,
+													vk::PhysicalDevice physicalDevice,
+													vk::Device& device,
+													vk::Queue& graphicsQueue);
 };
 
