@@ -7,15 +7,16 @@ class PhysicalDevice
 {
 
 public:
-	static void PickPhysicalDevice(vk::Instance instance, vk::PhysicalDevice& physicalDevice);
+	static void PickPhysicalDevice(vk::Instance instance, vk::SurfaceKHR surface, vk::PhysicalDevice& physicalDevice);
 
 private:
 
 	struct QueueFamilyIndices {
 		std::optional<uint32_t> graphicsFamily;
+		std::optional<uint32_t> presentFamily;
 
 		inline bool isComplete() {
-			return graphicsFamily.has_value();
+			return graphicsFamily.has_value() && presentFamily.has_value();
 		}
 	};
 
@@ -29,6 +30,9 @@ private:
 	friend void LogicalDevice::CreateLogicalDevice(	vk::Instance instance,
 													vk::PhysicalDevice physicalDevice,
 													vk::Device& device,
-													vk::Queue& graphicsQueue);
+													vk::Queue& graphicsQueue,
+													vk::Queue& presentQueue);
+
+	inline static vk::SurfaceKHR m_appSurface;
 };
 

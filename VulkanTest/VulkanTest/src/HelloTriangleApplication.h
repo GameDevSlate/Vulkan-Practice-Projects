@@ -20,6 +20,7 @@ private:
 	void InitWindow();
 	void InitVulkan();
 	void CreateInstance();
+	void CreateSurface();
 	void MainLoop();
 	std::vector<const char*> GetRequiredExtensions();
 	void CleanUp();
@@ -30,4 +31,6 @@ private:
 	vk::PhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
 	vk::Device m_device;
 	vk::Queue m_graphicsQueue;
+	vk::SurfaceKHR m_surface;
+	vk::Queue m_presentQueue;
 };

@@ -2,8 +2,11 @@
 #include<vector>
 #include<map>
 
-void PhysicalDevice::PickPhysicalDevice(vk::Instance instance, vk::PhysicalDevice& physicalDevice)
+void PhysicalDevice::PickPhysicalDevice(vk::Instance instance, vk::SurfaceKHR surface, vk::PhysicalDevice& physicalDevice)
 {
+	// Pass the window surface to the private member of this
+	m_appSurface = surface;
+
 	// Get the amount of physical devices available
 	uint32_t deviceCount;
 	instance.enumeratePhysicalDevices(&deviceCount, nullptr);
@@ -97,6 +100,14 @@ PhysicalDevice::PhysicalDevice::QueueFamilyIndices PhysicalDevice::FindQueueFami
 		// Check that one of the queue families has the graphics bit flag (VK_QUEUE_GRAPHICS_BIT)
 		if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
 			indices.graphicsFamily = i;
+
+		// Check that one of the queue families can present (display in a window),
+		// in case the queue is different from drawing
+		vk::Bool32 presentSupport = false;
+		device.getSurfaceSupportKHR(i, m_appSurface, &presentSupport);
+
+		if (presentSupport)
+			indices.presentFamily = i;
 
 		if (indices.isComplete())
 			break;

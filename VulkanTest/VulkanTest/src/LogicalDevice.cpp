@@ -3,26 +3,38 @@
 #include "LogicalDevice.h"
 #include"PhysicalDevice.h"
 #include"ValidationLayers.h"
+#include<set>
 
-void LogicalDevice::CreateLogicalDevice(vk::Instance instance, vk::PhysicalDevice physicalDevice, vk::Device& device, vk::Queue& graphicsQueue)
+void LogicalDevice::CreateLogicalDevice(vk::Instance instance,
+										vk::PhysicalDevice physicalDevice,
+										vk::Device& device,
+										vk::Queue& graphicsQueue,
+										vk::Queue& presentQueue)
 {
 	// Get the queue family indices
 	PhysicalDevice::QueueFamilyIndices indices = PhysicalDevice::FindQueueFamilies(physicalDevice);
 
-	// Make a Queue create info
-	vk::DeviceQueueCreateInfo queueCreateInfo{	.queueFamilyIndex = indices.graphicsFamily.value(),
-												.queueCount = 1};
+	// Create a set of different queue create infos for drawing and presenting
+	std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
+	std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
-	// Since we only have one queue, we'll set the priority to 1.0f
+	// Set the priority to 1.0f
 	float queuePriority = 1.0f;
-	queueCreateInfo.pQueuePriorities = &queuePriority;
+	for (uint32_t queueFamily : uniqueQueueFamilies) {
+
+		vk::DeviceQueueCreateInfo queueCreateInfo{	.queueFamilyIndex = queueFamily,
+													.queueCount = 1,
+													.pQueuePriorities = &queuePriority};
+
+		queueCreateInfos.push_back(queueCreateInfo);
+	}
 
 	// Get the physical device features
 	vk::PhysicalDeviceFeatures deviceFetures{};
 
 	// Make the Logical Device create info
-	vk::DeviceCreateInfo createInfo{	.queueCreateInfoCount = 1,
-										.pQueueCreateInfos = &queueCreateInfo,
+	vk::DeviceCreateInfo createInfo{	.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
+										.pQueueCreateInfos = queueCreateInfos.data(),
 										.enabledExtensionCount = 0,
 										.pEnabledFeatures = &deviceFetures};
 
@@ -39,4 +51,5 @@ void LogicalDevice::CreateLogicalDevice(vk::Instance instance, vk::PhysicalDevic
 		throw std::runtime_error("Failed to create Logical Device!");
 
 	device.getQueue(indices.graphicsFamily.value(), 0, &graphicsQueue);
+	device.getQueue(indices.presentFamily.value(), 0, &presentQueue);
 }

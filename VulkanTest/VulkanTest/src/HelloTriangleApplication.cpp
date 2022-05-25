@@ -33,8 +33,9 @@ void HelloTriangleApplication::InitVulkan()
 {
 	CreateInstance();
 	DebugUtils::SetupDebugMessenger(m_instance, m_debugMessenger);
-	PhysicalDevice::PickPhysicalDevice(m_instance, m_physicalDevice);
-	LogicalDevice::CreateLogicalDevice(m_instance, m_physicalDevice, m_device, m_graphicsQueue);
+	CreateSurface();
+	PhysicalDevice::PickPhysicalDevice(m_instance, m_surface, m_physicalDevice);
+	LogicalDevice::CreateLogicalDevice(m_instance, m_physicalDevice, m_device, m_graphicsQueue, m_presentQueue);
 }
 
 void HelloTriangleApplication::CreateInstance()
@@ -86,6 +87,13 @@ void HelloTriangleApplication::CreateInstance()
 		std::cout << '\t' << extension << '\n';
 }
 
+void HelloTriangleApplication::CreateSurface()
+{
+	// Casting has to be done because glfwCreateWindowSurface only takes C structs from vulkan.h
+	if (static_cast<vk::Result>(glfwCreateWindowSurface(m_instance, m_window, nullptr, reinterpret_cast<VkSurfaceKHR*>(&m_surface))) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create window surface!");
+}
+
 void HelloTriangleApplication::MainLoop()
 {
 	while (!glfwWindowShouldClose(m_window)) {
@@ -117,6 +125,9 @@ void HelloTriangleApplication::CleanUp()
 	// Destroy Debug utility
 	if (ValidationLayers::enableValidationLayers)
 		DebugUtils::DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
+
+	// Destroy window surface
+	m_instance.destroySurfaceKHR(m_surface, nullptr);
 
 	// Destroy Vulkan instance
 	m_instance.destroy();
