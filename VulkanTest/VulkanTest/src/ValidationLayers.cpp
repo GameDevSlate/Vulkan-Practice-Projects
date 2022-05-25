@@ -1,8 +1,6 @@
 #include "ValidationLayers.h"
 #include<vulkan/vulkan.hpp>
 
-const std::vector<const char*> ValidationLayers::validation_layers = { "VK_LAYER_KHRONOS_validation" };
-
 bool ValidationLayers::checkValidationLayerSupport()
 {
     // Get the number of available layers
@@ -15,7 +13,7 @@ bool ValidationLayers::checkValidationLayerSupport()
 
 
     // Check if all the layers exist
-    for (const char* layerName : ValidationLayers::validation_layers) {
+    for (const char* layerName : validation_layers) {
         bool layerFound = false;
 
         for (const auto& layerProperties : availableLayers) {

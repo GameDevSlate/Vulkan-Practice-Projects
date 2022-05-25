@@ -11,7 +11,7 @@ class ValidationLayers {
 		static const bool enableValidationLayers = true;
 #endif
 
-		static const std::vector<const char*> validation_layers;
+		inline static const std::vector<const char*> validation_layers = { "VK_LAYER_KHRONOS_validation" };
 
 		static bool checkValidationLayerSupport();
 };
