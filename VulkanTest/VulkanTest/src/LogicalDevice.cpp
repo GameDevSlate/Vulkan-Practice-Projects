@@ -33,9 +33,10 @@ void LogicalDevice::CreateLogicalDevice(vk::Instance instance,
 	vk::PhysicalDeviceFeatures deviceFetures{};
 
 	// Make the Logical Device create info
-	vk::DeviceCreateInfo createInfo{	.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
+	vk::DeviceCreateInfo createInfo{ .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
 										.pQueueCreateInfos = queueCreateInfos.data(),
-										.enabledExtensionCount = 0,
+										.enabledExtensionCount = static_cast<uint32_t>(PhysicalDevice::deviceExtensions.size()),
+										.ppEnabledExtensionNames = PhysicalDevice::deviceExtensions.data(),
 										.pEnabledFeatures = &deviceFetures};
 
 	// If we are debbugging, then add the validation layers
