@@ -1,31 +1,30 @@
 #include "ValidationLayers.h"
 #include<vulkan/vulkan.hpp>
 
-bool ValidationLayers::checkValidationLayerSupport()
+bool ValidationLayers::CheckValidationLayerSupport()
 {
-    // Get the number of available layers
-    uint32_t layerCount;
-    vk::enumerateInstanceLayerProperties(&layerCount, nullptr);
-    
-    // Enumerate the available layers
-    std::vector<vk::LayerProperties> availableLayers(layerCount);
-    vk::enumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+	// Get the number of available layers
+	uint32_t layer_count;
+	vk::enumerateInstanceLayerProperties(&layer_count, nullptr);
 
+	// Enumerate the available layers
+	std::vector<vk::LayerProperties> available_layers(layer_count);
+	enumerateInstanceLayerProperties(&layer_count, available_layers.data());
 
-    // Check if all the layers exist
-    for (const char* layerName : validation_layers) {
-        bool layerFound = false;
+	// Check if all the layers exist
+	for (const char* layer_name : validation_layers) {
+		bool layer_found = false;
 
-        for (const auto& layerProperties : availableLayers) {
-            if (strcmp(layerName, layerProperties.layerName) == 0) {
-                layerFound = true;
-                break;
-            }
-        }
+		for (const auto& layer_properties : available_layers) {
+			if (strcmp(layer_name, layer_properties.layerName) == 0) {
+				layer_found = true;
+				break;
+			}
+		}
 
-        if (!layerFound)
-            return false;
-    }
+		if (!layer_found)
+			return false;
+	}
 
-    return true;
+	return true;
 }

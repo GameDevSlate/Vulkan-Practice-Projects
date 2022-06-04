@@ -4,11 +4,12 @@
 #include<vulkan/vulkan.hpp>
 #pragma warning(pop)
 
-#include<GLFW/glfw3.h>
 #include<vector>
+#include<GLFW/glfw3.h>
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+constexpr uint32_t WIDTH = 800;
+
+constexpr uint32_t HEIGHT = 600;
 
 #pragma once
 class HelloTriangleApplication
@@ -18,19 +19,32 @@ public:
 
 private:
 	void InitWindow();
+
 	void InitVulkan();
+
 	void CreateInstance();
+
 	void CreateSurface();
-	void MainLoop();
+
+	void MainLoop() const;
+
 	std::vector<const char*> GetRequiredExtensions();
-	void CleanUp();
+
+	void CleanUp() const;
 
 	GLFWwindow* m_window;
+
 	vk::Instance m_instance;
+
 	vk::DebugUtilsMessengerEXT m_debugMessenger;
+
 	vk::PhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+
 	vk::Device m_device;
+
 	vk::Queue m_graphicsQueue;
+
 	vk::SurfaceKHR m_surface;
+
 	vk::Queue m_presentQueue;
 };

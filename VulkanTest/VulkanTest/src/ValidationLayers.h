@@ -2,16 +2,16 @@
 
 #pragma once
 
-class ValidationLayers {
-	public:
-
+class ValidationLayers
+{
+public:
 #ifndef _DEBUG
-		static const bool enableValidationLayers = false;
+		static constexpr bool enable_validation_layers = false;
 #else
-		static const bool enableValidationLayers = true;
+	static constexpr bool enable_validation_layers = true;
 #endif
 
-		inline static const std::vector<const char*> validation_layers = { "VK_LAYER_KHRONOS_validation" };
+	inline static const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
 
-		static bool checkValidationLayerSupport();
+	static bool CheckValidationLayerSupport();
 };

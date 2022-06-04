@@ -1,56 +1,59 @@
 #define VULKAN_HPP_NO_CONSTRUCTORS
 
 #include "LogicalDevice.h"
+#include<set>
 #include"PhysicalDevice.h"
 #include"ValidationLayers.h"
-#include<set>
 
-void LogicalDevice::CreateLogicalDevice(vk::Instance instance,
-										vk::PhysicalDevice physicalDevice,
-										vk::Device& device,
-										vk::Queue& graphicsQueue,
-										vk::Queue& presentQueue)
+void LogicalDevice::CreateLogicalDevice(
+	vk::PhysicalDevice physical_device,
+	vk::Device& device,
+	vk::Queue& graphics_queue,
+	vk::Queue& present_queue)
 {
 	// Get the queue family indices
-	PhysicalDevice::QueueFamilyIndices indices = PhysicalDevice::FindQueueFamilies(physicalDevice);
+	auto [index_graphics_family, index_present_family] = PhysicalDevice::FindQueueFamilies(physical_device);
 
 	// Create a set of different queue create infos for drawing and presenting
-	std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
-	std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+	std::vector<vk::DeviceQueueCreateInfo> queue_create_infos;
+	std::set<uint32_t> unique_queue_families = {index_graphics_family.value(), index_present_family.value()};
 
 	// Set the priority to 1.0f
-	float queuePriority = 1.0f;
-	for (uint32_t queueFamily : uniqueQueueFamilies) {
+	float queue_priority = 1.0f;
+	for (uint32_t queue_family : unique_queue_families) {
 
-		vk::DeviceQueueCreateInfo queueCreateInfo{	.queueFamilyIndex = queueFamily,
-													.queueCount = 1,
-													.pQueuePriorities = &queuePriority};
+		vk::DeviceQueueCreateInfo queue_create_info{
+			.queueFamilyIndex = queue_family,
+			.queueCount = 1,
+			.pQueuePriorities = &queue_priority
+		};
 
-		queueCreateInfos.push_back(queueCreateInfo);
+		queue_create_infos.push_back(queue_create_info);
 	}
 
 	// Get the physical device features
-	vk::PhysicalDeviceFeatures deviceFetures{};
+	vk::PhysicalDeviceFeatures device_features{};
 
 	// Make the Logical Device create info
-	vk::DeviceCreateInfo createInfo{ .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
-										.pQueueCreateInfos = queueCreateInfos.data(),
-										.enabledExtensionCount = static_cast<uint32_t>(PhysicalDevice::deviceExtensions.size()),
-										.ppEnabledExtensionNames = PhysicalDevice::deviceExtensions.data(),
-										.pEnabledFeatures = &deviceFetures};
+	vk::DeviceCreateInfo create_info{
+		.queueCreateInfoCount = static_cast<uint32_t>(queue_create_infos.size()),
+		.pQueueCreateInfos = queue_create_infos.data(),
+		.enabledExtensionCount = static_cast<uint32_t>(PhysicalDevice::device_extensions.size()),
+		.ppEnabledExtensionNames = PhysicalDevice::device_extensions.data(),
+		.pEnabledFeatures = &device_features
+	};
 
-	// If we are debbugging, then add the validation layers
-	if (ValidationLayers::enableValidationLayers) {
-		createInfo.enabledLayerCount = static_cast<uint32_t>(ValidationLayers::validation_layers.size());
-		createInfo.ppEnabledLayerNames = ValidationLayers::validation_layers.data();
-	}
-	else
-		createInfo.enabledLayerCount = 0;
+	// If we are debugging, then add the validation layers
+	if (ValidationLayers::enable_validation_layers) {
+		create_info.enabledLayerCount = static_cast<uint32_t>(ValidationLayers::validation_layers.size());
+		create_info.ppEnabledLayerNames = ValidationLayers::validation_layers.data();
+	} else
+		create_info.enabledLayerCount = 0;
 
 	// Create the Logical Device, and if there is an error, throw an exception
-	if (physicalDevice.createDevice(&createInfo, nullptr, &device) != vk::Result::eSuccess)
+	if (physical_device.createDevice(&create_info, nullptr, &device) != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to create Logical Device!");
 
-	device.getQueue(indices.graphicsFamily.value(), 0, &graphicsQueue);
-	device.getQueue(indices.presentFamily.value(), 0, &presentQueue);
+	device.getQueue(index_graphics_family.value(), 0, &graphics_queue);
+	device.getQueue(index_present_family.value(), 0, &present_queue);
 }

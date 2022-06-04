@@ -4,10 +4,9 @@
 class LogicalDevice
 {
 public:
-	static void CreateLogicalDevice(vk::Instance instance,
-									vk::PhysicalDevice physicalDevice,
-									vk::Device& device,
-									vk::Queue& graphicsQueue,
-									vk::Queue& presentQueue);
+	static void CreateLogicalDevice(
+		vk::PhysicalDevice physical_device,
+		vk::Device& device,
+		vk::Queue& graphics_queue,
+		vk::Queue& present_queue);
 };
-
