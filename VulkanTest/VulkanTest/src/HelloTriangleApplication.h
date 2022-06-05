@@ -28,11 +28,11 @@ private:
 
 	void MainLoop() const;
 
-	std::vector<const char*> GetRequiredExtensions();
+	static std::vector<const char*> GetRequiredExtensions();
 
 	void CleanUp() const;
 
-	GLFWwindow* m_window;
+	GLFWwindow* m_window = nullptr;
 
 	vk::Instance m_instance;
 
@@ -47,4 +47,8 @@ private:
 	vk::SurfaceKHR m_surface;
 
 	vk::Queue m_presentQueue;
+
+	vk::SwapchainKHR m_swapChain;
+
+	std::vector<vk::Image> m_swapChainImages;
 };

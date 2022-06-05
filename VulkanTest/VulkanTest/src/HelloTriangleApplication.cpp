@@ -34,8 +34,9 @@ void HelloTriangleApplication::InitVulkan()
 	CreateInstance();
 	DebugUtils::SetupDebugMessenger(m_instance, m_debugMessenger);
 	CreateSurface();
-	PhysicalDevice::PickPhysicalDevice(m_instance, m_surface, m_physicalDevice);
-	LogicalDevice::CreateLogicalDevice(m_physicalDevice, m_device, m_graphicsQueue, m_presentQueue);
+	PhysicalDevice::PickPhysicalDevice(m_physicalDevice, m_instance, m_surface, m_window);
+	LogicalDevice::CreateLogicalDevice(m_device, m_physicalDevice, m_graphicsQueue, m_presentQueue);
+	PhysicalDevice::CreateSwapChain(m_swapChain, m_swapChainImages, m_physicalDevice, m_device);
 }
 
 void HelloTriangleApplication::CreateInstance()
@@ -56,30 +57,30 @@ void HelloTriangleApplication::CreateInstance()
 	// Creating a structure chain for .pNext Pointers
 	vk::StructureChain<vk::InstanceCreateInfo, vk::DebugUtilsMessengerCreateInfoEXT> chain;
 
-	vk::InstanceCreateInfo& createInfo = chain.get<vk::InstanceCreateInfo>();
+	vk::InstanceCreateInfo& create_info = chain.get<vk::InstanceCreateInfo>();
 
 	// Creating the information to create an instance
-	createInfo.pApplicationInfo = &applicationInfo;
+	create_info.pApplicationInfo = &applicationInfo;
 
 	// Setting extensions
 	auto extensions = GetRequiredExtensions();
 
-	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-	createInfo.ppEnabledExtensionNames = extensions.data();
+	create_info.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+	create_info.ppEnabledExtensionNames = extensions.data();
 
 	// Validation layers
 	auto& debugCreateInfo = chain.get<vk::DebugUtilsMessengerCreateInfoEXT>();
 	if (ValidationLayers::enable_validation_layers) {
-		createInfo.enabledLayerCount = static_cast<uint32_t>(ValidationLayers::validation_layers.size());
-		createInfo.ppEnabledLayerNames = ValidationLayers::validation_layers.data();
+		create_info.enabledLayerCount = static_cast<uint32_t>(ValidationLayers::validation_layers.size());
+		create_info.ppEnabledLayerNames = ValidationLayers::validation_layers.data();
 
 		DebugUtils::PopulateMessengerCreateInfo(debugCreateInfo);
 	} else {
-		createInfo.enabledLayerCount = 0;
+		create_info.enabledLayerCount = 0;
 		chain.unlink<vk::DebugUtilsMessengerCreateInfoEXT>();
 	}
 
-	if (createInstance(&createInfo, nullptr, &m_instance) != vk::Result::eSuccess)
+	if (createInstance(&create_info, nullptr, &m_instance) != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to create instance!");
 
 	std::cout << "Available extensions:\n";
@@ -121,7 +122,10 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 
 void HelloTriangleApplication::CleanUp() const
 {
-	//Destroy Logical Device
+	// Destroy Swap Chain
+	m_device.destroySwapchainKHR(m_swapChain, nullptr);
+
+	// Destroy Logical Device
 	m_device.destroy(nullptr);
 
 	// Destroy Debug utility

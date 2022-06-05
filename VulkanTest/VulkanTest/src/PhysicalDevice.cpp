@@ -1,13 +1,22 @@
+#define VULKAN_HPP_NO_CONSTRUCTORS
+
 #include "PhysicalDevice.h"
+#include <algorithm> // Necessary for std::clamp
+#include <cstdint> // Necessary for uint32_t
+#include <limits> // Necessary for std::numeric_limits
 #include<map>
 #include<set>
 
-void PhysicalDevice::PickPhysicalDevice(vk::Instance instance,
+void PhysicalDevice::PickPhysicalDevice(vk::PhysicalDevice& physical_device,
+                                        vk::Instance instance,
                                         vk::SurfaceKHR surface,
-                                        vk::PhysicalDevice& physical_device)
+                                        GLFWwindow* app_window)
 {
 	// Pass the window surface to the private member of this
 	m_appSurface = surface;
+
+	// Pass the actual window to the member of this
+	m_appWindow = app_window;
 
 	// Get the amount of physical devices available
 	uint32_t device_count;
@@ -39,22 +48,79 @@ void PhysicalDevice::PickPhysicalDevice(vk::Instance instance,
 		throw std::runtime_error("Failed to find a suitable GPU!");
 }
 
+void PhysicalDevice::CreateSwapChain(vk::SwapchainKHR& swap_chain,
+                                     std::vector<vk::Image>& swap_chain_images,
+                                     const vk::PhysicalDevice physical_device,
+                                     const vk::Device device)
+{
+	const auto [chain_capabilities, chain_formats, chain_present_modes] = QuerySwapChainSupport(physical_device);
+
+	vk::SurfaceFormatKHR surface_format = ChooseSwapSurfaceFormat(chain_formats);
+	vk::PresentModeKHR present_mode = ChooseSwapPresentMode(chain_present_modes);
+	vk::Extent2D extent = ChooseSwapExtent(chain_capabilities);
+
+	// Setting the minimum amount of images that should be in the swap chain
+	uint32_t image_count = chain_capabilities.minImageCount + 1;
+
+	// Setting the maximum amount of images that should be in the swap chain ---zero means no maximum
+	if (chain_capabilities.maxImageCount > 0 && image_count > chain_capabilities.maxImageCount)
+		image_count = chain_capabilities.maxImageCount;
+
+	// Making the create info for the swap chain
+	vk::SwapchainCreateInfoKHR create_info{
+		.surface = m_appSurface,
+		.minImageCount = image_count,
+		.imageFormat = surface_format.format,
+		.imageColorSpace = surface_format.colorSpace,
+		.imageExtent = extent,
+		.imageArrayLayers = 1,
+		.imageUsage = vk::ImageUsageFlagBits::eColorAttachment
+	};
+
+	const auto [indices_graphics_family, indices_present_family] = FindQueueFamilies(physical_device);
+	const uint32_t queue_family_indices[] = {indices_graphics_family.value(), indices_present_family.value()};
+
+	if (indices_graphics_family != indices_present_family) {
+		create_info.imageSharingMode = vk::SharingMode::eConcurrent;
+		create_info.queueFamilyIndexCount = 2;
+		create_info.pQueueFamilyIndices = queue_family_indices;
+	} else {
+		create_info.imageSharingMode = vk::SharingMode::eExclusive;
+		create_info.queueFamilyIndexCount = 0;     // Optional
+		create_info.pQueueFamilyIndices = nullptr; // Optional
+	}
+
+	create_info.preTransform = chain_capabilities.currentTransform;
+	create_info.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
+	create_info.presentMode = present_mode;
+	create_info.oldSwapchain = VK_NULL_HANDLE;
+
+	if (device.createSwapchainKHR(&create_info, nullptr, &swap_chain) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create swap chain!");
+
+	device.getSwapchainImagesKHR(swap_chain, &image_count, nullptr);
+
+	swap_chain_images.resize(image_count);
+
+	device.getSwapchainImagesKHR(swap_chain, &image_count, swap_chain_images.data());
+}
+
 bool PhysicalDevice::IsDeviceSuitable(const vk::PhysicalDevice device)
 {
 	QueueFamilyIndices indices = FindQueueFamilies(device);
 
 	bool extensionsSupported = CheckDeviceExtensionSupport(device);
 
-	bool swapChainAdequate = false;
+	bool swap_chain_adequate = false;
 
 	if (extensionsSupported) {
 		SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
 
 		// Might use Demorgan's law here later
-		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+		swap_chain_adequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 
-	return indices.IsComplete() && extensionsSupported && swapChainAdequate;
+	return indices.IsComplete() && extensionsSupported && swap_chain_adequate;
 }
 
 int PhysicalDevice::RateDeviceSuitability(vk::PhysicalDevice device)
@@ -121,7 +187,7 @@ bool PhysicalDevice::CheckDeviceExtensionSupport(const vk::PhysicalDevice device
 	return requiredExtensions.empty();
 }
 
-// This is a mouthfull because the first PhysicalDevice is to indicate the class file,
+// This is a mouthful because the first PhysicalDevice is to indicate the class file,
 // and the second is for the actual class object itself
 PhysicalDevice::QueueFamilyIndices PhysicalDevice::FindQueueFamilies(const vk::PhysicalDevice device)
 {
@@ -167,7 +233,12 @@ PhysicalDevice::SwapChainSupportDetails PhysicalDevice::QuerySwapChainSupport(co
 
 	// Query the supported surface formats
 	uint32_t format_count;
-	device.getSurfaceFormatsKHR(m_appSurface, &format_count, details.formats.data());
+	device.getSurfaceFormatsKHR(m_appSurface, &format_count, nullptr);
+
+	if (format_count != 0) {
+		details.formats.resize(format_count);
+		device.getSurfaceFormatsKHR(m_appSurface, &format_count, details.formats.data());
+	}
 
 	// Query the supporeted present modes
 	uint32_t present_mode_count;
@@ -189,6 +260,39 @@ vk::SurfaceFormatKHR PhysicalDevice::ChooseSwapSurfaceFormat(const std::vector<v
 		    vk::ColorSpaceKHR::eSrgbNonlinear)
 			return available_format;
 
-	// In case the sRGB color format cannot be found just pick the first one.
+	// In case the sRGB color format cannot be found, just pick the first one.
 	return available_formats[0];
+}
+
+vk::PresentModeKHR PhysicalDevice::ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& available_present_modes)
+{
+	for (const auto& available_present_mode : available_present_modes)
+		if (available_present_mode == vk::PresentModeKHR::eMailbox)
+			return available_present_mode;
+
+	// In case we cannot find the mailbox present mode, pick FIFO, which is guaranteed
+	return vk::PresentModeKHR::eFifo;
+}
+
+vk::Extent2D PhysicalDevice::ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities)
+{
+	// Return the current extent of the window size if we are under the maximum size
+	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+		return capabilities.currentExtent;
+
+	// Otherwise, Clamp the current extent of the window
+
+	int width, height;
+
+	glfwGetFramebufferSize(m_appWindow, &width, &height);
+
+	vk::Extent2D actual_extent = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+
+	actual_extent.width = std::clamp(actual_extent.width, capabilities.minImageExtent.width,
+	                                 capabilities.maxImageExtent.width);
+
+	actual_extent.height = std::clamp(actual_extent.height, capabilities.minImageExtent.height,
+	                                  capabilities.maxImageExtent.height);
+
+	return actual_extent;
 }

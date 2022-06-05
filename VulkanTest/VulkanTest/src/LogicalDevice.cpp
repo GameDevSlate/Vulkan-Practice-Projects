@@ -6,8 +6,8 @@
 #include"ValidationLayers.h"
 
 void LogicalDevice::CreateLogicalDevice(
-	vk::PhysicalDevice physical_device,
 	vk::Device& device,
+	vk::PhysicalDevice physical_device,
 	vk::Queue& graphics_queue,
 	vk::Queue& present_queue)
 {
