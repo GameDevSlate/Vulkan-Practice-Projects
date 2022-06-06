@@ -26,6 +26,8 @@ private:
 
 	void CreateSurface();
 
+	void CreateImageViews();
+
 	void MainLoop() const;
 
 	static std::vector<const char*> GetRequiredExtensions();
@@ -51,4 +53,10 @@ private:
 	vk::SwapchainKHR m_swapChain;
 
 	std::vector<vk::Image> m_swapChainImages;
+
+	vk::Format m_swapChainImageFormat;
+
+	vk::Extent2D m_swapChainExtent;
+
+	std::vector<vk::ImageView> m_swapChainImageViews;
 };

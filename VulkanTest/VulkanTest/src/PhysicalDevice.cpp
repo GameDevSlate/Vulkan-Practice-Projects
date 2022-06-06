@@ -50,6 +50,8 @@ void PhysicalDevice::PickPhysicalDevice(vk::PhysicalDevice& physical_device,
 
 void PhysicalDevice::CreateSwapChain(vk::SwapchainKHR& swap_chain,
                                      std::vector<vk::Image>& swap_chain_images,
+                                     vk::Format& swap_chain_format,
+                                     vk::Extent2D& swap_chain_extent,
                                      const vk::PhysicalDevice physical_device,
                                      const vk::Device device)
 {
@@ -103,6 +105,10 @@ void PhysicalDevice::CreateSwapChain(vk::SwapchainKHR& swap_chain,
 	swap_chain_images.resize(image_count);
 
 	device.getSwapchainImagesKHR(swap_chain, &image_count, swap_chain_images.data());
+
+	// Lastly, set the swap chain image format and extent
+	swap_chain_format = surface_format.format;
+	swap_chain_extent = extent;
 }
 
 bool PhysicalDevice::IsDeviceSuitable(const vk::PhysicalDevice device)
@@ -148,12 +154,12 @@ int PhysicalDevice::RateDeviceSuitability(vk::PhysicalDevice device)
 		score += indices.graphicsFamily.value();
 
 	// Add to the score if this device has supported extensions
-	bool extensionsSupported = CheckDeviceExtensionSupport(device);
+	bool extensions_supported = CheckDeviceExtensionSupport(device);
 
-	score += extensionsSupported ? 500 : 0;
+	score += extensions_supported ? 500 : 0;
 
 	// Add to the score if this device has supported swapchain capabilities
-	if (extensionsSupported) {
+	if (extensions_supported) {
 		auto [capabilities, formats, present_modes] = QuerySwapChainSupport(device);
 
 		score += !formats.empty() && !present_modes.empty() ? 500 : 0;
@@ -168,23 +174,23 @@ int PhysicalDevice::RateDeviceSuitability(vk::PhysicalDevice device)
 
 bool PhysicalDevice::CheckDeviceExtensionSupport(const vk::PhysicalDevice device)
 {
-	uint32_t extensionCount;
+	uint32_t extension_count;
 
 	// Count the ammount of extensions and assign them to extensionCount
-	device.enumerateDeviceExtensionProperties(nullptr, &extensionCount, nullptr);
+	device.enumerateDeviceExtensionProperties(nullptr, &extension_count, nullptr);
 
-	std::vector<vk::ExtensionProperties> availableExtensions(extensionCount);
+	std::vector<vk::ExtensionProperties> available_extensions(extension_count);
 
 	// Allocate the extensions to the vector
-	device.enumerateDeviceExtensionProperties(nullptr, &extensionCount, availableExtensions.data());
+	device.enumerateDeviceExtensionProperties(nullptr, &extension_count, available_extensions.data());
 
 	// Create a set of required extensions from the available extensions
-	std::set<std::string> requiredExtensions(device_extensions.begin(), device_extensions.end());
+	std::set<std::string> required_extensions(device_extensions.begin(), device_extensions.end());
 
-	for (const auto& extension : availableExtensions)
-		requiredExtensions.erase(extension.extensionName);
+	for (const auto& extension : available_extensions)
+		required_extensions.erase(extension.extensionName);
 
-	return requiredExtensions.empty();
+	return required_extensions.empty();
 }
 
 // This is a mouthful because the first PhysicalDevice is to indicate the class file,

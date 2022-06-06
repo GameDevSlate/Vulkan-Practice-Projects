@@ -36,7 +36,9 @@ void HelloTriangleApplication::InitVulkan()
 	CreateSurface();
 	PhysicalDevice::PickPhysicalDevice(m_physicalDevice, m_instance, m_surface, m_window);
 	LogicalDevice::CreateLogicalDevice(m_device, m_physicalDevice, m_graphicsQueue, m_presentQueue);
-	PhysicalDevice::CreateSwapChain(m_swapChain, m_swapChainImages, m_physicalDevice, m_device);
+	PhysicalDevice::CreateSwapChain(m_swapChain, m_swapChainImages, m_swapChainImageFormat, m_swapChainExtent,
+	                                m_physicalDevice, m_device);
+	CreateImageViews();
 }
 
 void HelloTriangleApplication::CreateInstance()
@@ -69,12 +71,12 @@ void HelloTriangleApplication::CreateInstance()
 	create_info.ppEnabledExtensionNames = extensions.data();
 
 	// Validation layers
-	auto& debugCreateInfo = chain.get<vk::DebugUtilsMessengerCreateInfoEXT>();
+	auto& debug_create_info = chain.get<vk::DebugUtilsMessengerCreateInfoEXT>();
 	if (ValidationLayers::enable_validation_layers) {
 		create_info.enabledLayerCount = static_cast<uint32_t>(ValidationLayers::validation_layers.size());
 		create_info.ppEnabledLayerNames = ValidationLayers::validation_layers.data();
 
-		DebugUtils::PopulateMessengerCreateInfo(debugCreateInfo);
+		DebugUtils::PopulateMessengerCreateInfo(debug_create_info);
 	} else {
 		create_info.enabledLayerCount = 0;
 		chain.unlink<vk::DebugUtilsMessengerCreateInfoEXT>();
@@ -96,6 +98,36 @@ void HelloTriangleApplication::CreateSurface()
 	                                                    reinterpret_cast<VkSurfaceKHR*>(&m_surface))) !=
 	    vk::Result::eSuccess)
 		throw std::runtime_error("Failed to create window surface!");
+}
+
+void HelloTriangleApplication::CreateImageViews()
+{
+	m_swapChainImageViews.resize(m_swapChainImages.size());
+
+	for (size_t i = 0; i < m_swapChainImages.size(); i++) {
+
+		vk::ImageViewCreateInfo create_info{
+			.image = m_swapChainImages[i],
+			.viewType = vk::ImageViewType::e2D,
+			.format = m_swapChainImageFormat,
+			.components = {
+				.r = vk::ComponentSwizzle::eIdentity,
+				.g = vk::ComponentSwizzle::eIdentity,
+				.b = vk::ComponentSwizzle::eIdentity,
+				.a = vk::ComponentSwizzle::eIdentity
+			},
+			.subresourceRange = {
+				.aspectMask = vk::ImageAspectFlagBits::eColor,
+				.baseMipLevel = 0,
+				.levelCount = 1,
+				.baseArrayLayer = 0,
+				.layerCount = 1
+			}
+		};
+
+		if (m_device.createImageView(&create_info, nullptr, &m_swapChainImageViews[i]) != vk::Result::eSuccess)
+			throw std::runtime_error("Failed to create image views");
+	}
 }
 
 void HelloTriangleApplication::MainLoop() const
@@ -122,6 +154,10 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 
 void HelloTriangleApplication::CleanUp() const
 {
+	//Destroy image views
+	for (const vk::ImageView image_view : m_swapChainImageViews)
+		m_device.destroyImageView(image_view, nullptr);
+
 	// Destroy Swap Chain
 	m_device.destroySwapchainKHR(m_swapChain, nullptr);
 

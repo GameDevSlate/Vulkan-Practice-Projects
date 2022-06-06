@@ -16,6 +16,8 @@ public:
 
 	static void CreateSwapChain(vk::SwapchainKHR& swap_chain,
 	                            std::vector<vk::Image>& swap_chain_images,
+	                            vk::Format& swap_chain_format,
+	                            vk::Extent2D& swap_chain_extent,
 	                            vk::PhysicalDevice physical_device,
 	                            vk::Device device);
 
