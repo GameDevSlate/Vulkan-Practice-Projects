@@ -53,4 +53,10 @@
 	<s:String x:Key="/Default/Housekeeping/OptionsDialog/SelectedPageId/@EntryValue">CppNaming</s:String>
 	<s:Boolean x:Key="/Default/Housekeeping/UpgradeFromExceptionReport/UpgradePerformed/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/Housekeeping/WhatsNewShown/WhatsNewShownIndexedEntry/=RC/@EntryIndexedValue">2022.1</s:String>
-	<s:String x:Key="/Default/Housekeeping/WhatsNewShown/WhatsNewShownIndexedEntry/=RS0/@EntryIndexedValue">2022.1</s:String></wpf:ResourceDictionary>
+	<s:String x:Key="/Default/Housekeeping/WhatsNewShown/WhatsNewShownIndexedEntry/=RS0/@EntryIndexedValue">2022.1</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=glfw/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=GLSL/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=shaders/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=SPIRV/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=vert/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Vulkan/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

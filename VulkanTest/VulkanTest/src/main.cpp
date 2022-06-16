@@ -2,11 +2,15 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "Core/Log.h"
+
 // Custom Vulkan Application class
 #include"HelloTriangleApplication.h"
 
 int main()
 {
+	Log::Init();
+
 	HelloTriangleApplication app;
 
 	try {

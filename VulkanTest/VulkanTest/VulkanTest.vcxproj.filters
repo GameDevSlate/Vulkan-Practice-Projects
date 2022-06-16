@@ -33,6 +33,21 @@
     <ClCompile Include="src\LogicalDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GraphicsPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShaderLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OpenGLShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HelloTriangleApplication.h">
@@ -48,6 +63,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\LogicalDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GraphicsPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ShaderLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Assert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\PlatformDetection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OpenGLShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

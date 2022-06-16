@@ -96,14 +96,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;$(ProjectDir)Dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\Vulkan\Lib;$(ProjectDir)Dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;user32.lib;Gdi32.lib;Shell32.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;shaderc_combinedd.lib;spirv-cross-cored.lib;user32.lib;Gdi32.lib;Shell32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,8 +115,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;$(ProjectDir)Dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,7 +125,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\Vulkan\Lib;$(ProjectDir)Dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;user32.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;shaderc_combined.lib;spirv-cross-core.lib;user32.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -132,14 +134,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;$(ProjectDir)Dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\Vulkan\Lib;$(ProjectDir)Dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;user32.lib;Gdi32.lib;Shell32.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;shaderc_combinedd.lib;spirv-cross-cored.lib;user32.lib;Gdi32.lib;Shell32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,8 +153,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;$(ProjectDir)Dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -159,22 +163,36 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)Dependencies\Vulkan\Lib;$(ProjectDir)Dependencies\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;user32.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;shaderc_combined.lib;spirv-cross-core.lib;user32.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\Log.cpp" />
+    <ClCompile Include="src\GraphicsPipeline.cpp" />
     <ClCompile Include="src\LogicalDevice.cpp" />
+    <ClCompile Include="src\OpenGLShader.cpp" />
     <ClCompile Include="src\PhysicalDevice.cpp" />
     <ClCompile Include="src\DebugUtils.cpp" />
     <ClCompile Include="src\HelloTriangleApplication.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\ShaderLibrary.cpp" />
     <ClCompile Include="src\ValidationLayers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\Assert.h" />
+    <ClInclude Include="src\Core\Base.h" />
+    <ClInclude Include="src\Core\Log.h" />
+    <ClInclude Include="src\Core\PlatformDetection.h" />
+    <ClInclude Include="src\Core\Timer.h" />
+    <ClInclude Include="src\GraphicsPipeline.h" />
     <ClInclude Include="src\LogicalDevice.h" />
+    <ClInclude Include="src\OpenGLShader.h" />
     <ClInclude Include="src\PhysicalDevice.h" />
     <ClInclude Include="src\DebugUtils.h" />
     <ClInclude Include="src\HelloTriangleApplication.h" />
+    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\ShaderLibrary.h" />
     <ClInclude Include="src\ValidationLayers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

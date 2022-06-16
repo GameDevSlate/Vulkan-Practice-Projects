@@ -1,9 +1,12 @@
 #define VULKAN_HPP_NO_CONSTRUCTORS
 
 #include "HelloTriangleApplication.h"
+
 #include<iostream>
+
 #include"DebugUtils.h"
 #include"LogicalDevice.h"
+#include "OpenGLShader.h"
 #include"PhysicalDevice.h"
 #include"ValidationLayers.h"
 
@@ -39,6 +42,8 @@ void HelloTriangleApplication::InitVulkan()
 	PhysicalDevice::CreateSwapChain(m_swapChain, m_swapChainImages, m_swapChainImageFormat, m_swapChainExtent,
 	                                m_physicalDevice, m_device);
 	CreateImageViews();
+
+	OpenGLShader test_shader("Triangle", "assets/shaders/Triangle.vert", "assets/shaders/Triangle.frag");
 }
 
 void HelloTriangleApplication::CreateInstance()
