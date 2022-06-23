@@ -1,4 +1,6 @@
-﻿#include "OpenGLShader.h"
+﻿#define VULKAN_HPP_NO_CONSTRUCTORS
+
+#include "OpenGLShader.h"
 
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
@@ -199,6 +201,36 @@ OpenGLShader::OpenGLShader(const std::string& name,
 }
 
 OpenGLShader::~OpenGLShader() {}
+
+/**
+ * \brief Creates a shader module
+ * \param device The logical device used to create the shader module.
+ * \param shader The shader object that holds the vulkan byte code of the type of shader.
+ * \param stage The type of shader stage that should be created.
+ * \return A new shader module of the type of stage it was designated to be.
+ */
+vk::ShaderModule OpenGLShader::CreateShaderModule(const vk::Device device,
+                                                  OpenGLShader shader,
+                                                  const vk::ShaderStageFlagBits stage)
+{
+	vk::ShaderModuleCreateInfo create_info{
+		/*
+		 * Since the data store inside the vulkan spirv binaries is an array
+		 * of unsigned integers, when getting the size of the actual data,
+		 * it has to be multiplied by the size of uint32_t, which is the same.
+		 */
+		.codeSize = shader.m_vulkanSpirv[stage].size() * sizeof(uint32_t),
+		.pCode = shader.m_vulkanSpirv[stage].data()
+	};
+
+	vk::ShaderModule shader_module;
+
+	if (device.createShaderModule(&create_info, nullptr, &shader_module) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create shader module! of type: " + static_cast<std::string>(
+			                         ShaderUtils::GLShaderStageToString(stage)));
+
+	return shader_module;
+}
 
 void OpenGLShader::Bind() const {}
 

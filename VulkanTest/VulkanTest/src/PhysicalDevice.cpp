@@ -8,8 +8,8 @@
 #include<set>
 
 void PhysicalDevice::PickPhysicalDevice(vk::PhysicalDevice& physical_device,
-                                        vk::Instance instance,
-                                        vk::SurfaceKHR surface,
+                                        const vk::Instance instance,
+                                        const vk::SurfaceKHR surface,
                                         GLFWwindow* app_window)
 {
 	// Pass the window surface to the private member of this

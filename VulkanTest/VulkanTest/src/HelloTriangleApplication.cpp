@@ -5,6 +5,7 @@
 #include<iostream>
 
 #include"DebugUtils.h"
+#include "GraphicsPipeline.h"
 #include"LogicalDevice.h"
 #include "OpenGLShader.h"
 #include"PhysicalDevice.h"
@@ -43,7 +44,9 @@ void HelloTriangleApplication::InitVulkan()
 	                                m_physicalDevice, m_device);
 	CreateImageViews();
 
-	OpenGLShader test_shader("Triangle", "assets/shaders/Triangle.vert", "assets/shaders/Triangle.frag");
+	const OpenGLShader triangle_shader("Triangle", "assets/shaders/Triangle.vert", "assets/shaders/Triangle.frag");
+
+	GraphicsPipeline::CreateGraphicsPipeline(m_pipelineLayout, m_device, m_swapChainExtent, triangle_shader);
 }
 
 void HelloTriangleApplication::CreateInstance()
@@ -53,7 +56,7 @@ void HelloTriangleApplication::CreateInstance()
 		throw std::runtime_error("Validation layers requested, but not available");
 
 	// Creating the application info
-	vk::ApplicationInfo applicationInfo{
+	vk::ApplicationInfo application_info{
 		.pApplicationName = "Hello Triangle",
 		.applicationVersion = VK_MAKE_VERSION(1, 0, 0),
 		.pEngineName = "No Engine",
@@ -67,7 +70,7 @@ void HelloTriangleApplication::CreateInstance()
 	vk::InstanceCreateInfo& create_info = chain.get<vk::InstanceCreateInfo>();
 
 	// Creating the information to create an instance
-	create_info.pApplicationInfo = &applicationInfo;
+	create_info.pApplicationInfo = &application_info;
 
 	// Setting extensions
 	auto extensions = GetRequiredExtensions();
@@ -159,6 +162,9 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 
 void HelloTriangleApplication::CleanUp() const
 {
+	// Destroy the pipeline layout
+	m_device.destroyPipelineLayout(m_pipelineLayout, nullptr);
+
 	//Destroy image views
 	for (const vk::ImageView image_view : m_swapChainImageViews)
 		m_device.destroyImageView(image_view, nullptr);

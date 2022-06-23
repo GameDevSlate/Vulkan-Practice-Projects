@@ -17,6 +17,8 @@ public:
 
 	~OpenGLShader() override;
 
+	static vk::ShaderModule CreateShaderModule(vk::Device device, OpenGLShader shader, vk::ShaderStageFlagBits stage);
+
 	void Bind() const override;
 
 	void Unbind() const override;
@@ -75,7 +77,7 @@ private:
 
 	std::unordered_map<vk::ShaderStageFlagBits, std::vector<uint32_t>> m_vulkanSpirv;
 
-	std::unordered_map<vk::ShaderStageFlagBits, std::vector<uint32_t>> m_openGLSPIRV;
+	std::unordered_map<vk::ShaderStageFlagBits, std::vector<uint32_t>> m_openGLSpirv;
 
 	std::unordered_map<vk::ShaderStageFlagBits, std::string> m_openGLSourceCode;
 };
