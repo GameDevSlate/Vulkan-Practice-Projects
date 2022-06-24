@@ -60,5 +60,7 @@ private:
 
 	std::vector<vk::ImageView> m_swapChainImageViews;
 
+	vk::RenderPass m_renderPass;
+
 	vk::PipelineLayout m_pipelineLayout;
 };

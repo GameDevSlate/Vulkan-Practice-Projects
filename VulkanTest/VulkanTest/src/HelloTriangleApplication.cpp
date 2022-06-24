@@ -46,6 +46,8 @@ void HelloTriangleApplication::InitVulkan()
 
 	const OpenGLShader triangle_shader("Triangle", "assets/shaders/Triangle.vert", "assets/shaders/Triangle.frag");
 
+	GraphicsPipeline::CreateRenderPass(m_renderPass, m_device, m_swapChainImageFormat);
+
 	GraphicsPipeline::CreateGraphicsPipeline(m_pipelineLayout, m_device, m_swapChainExtent, triangle_shader);
 }
 
@@ -162,8 +164,9 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 
 void HelloTriangleApplication::CleanUp() const
 {
-	// Destroy the pipeline layout
+	// Destroy the pipeline layout and render pass
 	m_device.destroyPipelineLayout(m_pipelineLayout, nullptr);
+	m_device.destroyRenderPass(m_renderPass, nullptr);
 
 	//Destroy image views
 	for (const vk::ImageView image_view : m_swapChainImageViews)

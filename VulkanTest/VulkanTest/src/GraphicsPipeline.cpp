@@ -124,7 +124,7 @@ void GraphicsPipeline::CreateGraphicsPipeline(vk::PipelineLayout& pipeline_layou
 	};
 
 	// Dynamic state
-	std::vector<vk::DynamicState> dynamic_states = {vk::DynamicState::eViewport, vk::DynamicState::eLineWidth};
+	std::vector dynamic_states = {vk::DynamicState::eViewport, vk::DynamicState::eLineWidth};
 
 	vk::PipelineDynamicStateCreateInfo dynamic_state{
 		.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size()),
@@ -151,4 +151,44 @@ void GraphicsPipeline::CreateGraphicsPipeline(vk::PipelineLayout& pipeline_layou
 	// Since shader modules get converted to machine code, they can be destroyed
 	device.destroyShaderModule(frag_shader_module, nullptr);
 	device.destroyShaderModule(vert_shader_module, nullptr);
+}
+
+void GraphicsPipeline::CreateRenderPass(vk::RenderPass& render_pass,
+                                        vk::Device device,
+                                        vk::Format swap_chain_image_format)
+{
+	// Attachment Description
+	vk::AttachmentDescription color_attachment{
+		.format = swap_chain_image_format,
+		.samples = vk::SampleCountFlagBits::e1,
+		.loadOp = vk::AttachmentLoadOp::eClear,
+		.storeOp = vk::AttachmentStoreOp::eStore,
+		.stencilLoadOp = vk::AttachmentLoadOp::eDontCare,
+		.stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
+		.initialLayout = vk::ImageLayout::eUndefined,
+		.finalLayout = vk::ImageLayout::ePresentSrcKHR
+	};
+
+	// Subpasses and attachment references
+	vk::AttachmentReference color_attachment_ref{
+		.attachment = 0,
+		.layout = vk::ImageLayout::eColorAttachmentOptimal
+	};
+
+	vk::SubpassDescription subpass{
+		.pipelineBindPoint = vk::PipelineBindPoint::eGraphics,
+		.colorAttachmentCount = 1,
+		.pColorAttachments = &color_attachment_ref
+	};
+
+	// Render pass
+	vk::RenderPassCreateInfo render_pass_info{
+		.attachmentCount = 1,
+		.pAttachments = &color_attachment,
+		.subpassCount = 1,
+		.pSubpasses = &subpass
+	};
+
+	if (device.createRenderPass(&render_pass_info, nullptr, &render_pass) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create render pass!");
 }
