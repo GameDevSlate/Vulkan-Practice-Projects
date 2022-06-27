@@ -50,6 +50,8 @@ void HelloTriangleApplication::InitVulkan()
 
 	GraphicsPipeline::CreateGraphicsPipeline(m_graphicsPipeline, m_pipelineLayout, m_renderPass, m_device,
 	                                         m_swapChainExtent, triangle_shader);
+
+	CreateFrameBuffers();
 }
 
 void HelloTriangleApplication::CreateInstance()
@@ -141,6 +143,27 @@ void HelloTriangleApplication::CreateImageViews()
 	}
 }
 
+void HelloTriangleApplication::CreateFrameBuffers()
+{
+	m_swapChainFrameBuffers.resize(m_swapChainImageViews.size());
+
+	for (size_t i = 0; i < m_swapChainImageViews.size(); i++) {
+		vk::ImageView attachments[] = {m_swapChainImageViews[i]};
+
+		vk::FramebufferCreateInfo framebuffer_info{
+			.renderPass = m_renderPass,
+			.attachmentCount = 1,
+			.pAttachments = attachments,
+			.width = m_swapChainExtent.width,
+			.height = m_swapChainExtent.height,
+			.layers = 1
+		};
+
+		if (m_device.createFramebuffer(&framebuffer_info, nullptr, &m_swapChainFrameBuffers[i]) != vk::Result::eSuccess)
+			throw std::runtime_error("Failed to create framebuffer!");
+	}
+}
+
 void HelloTriangleApplication::MainLoop() const
 {
 	while (!glfwWindowShouldClose(m_window)) {
@@ -155,7 +178,7 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-	std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+	std::vector extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
 	if (ValidationLayers::enable_validation_layers)
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -165,6 +188,10 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 
 void HelloTriangleApplication::CleanUp() const
 {
+	// Destroy swap chain frame buffers
+	for (auto framebuffer : m_swapChainFrameBuffers)
+		m_device.destroyFramebuffer(framebuffer, nullptr);
+
 	// Destroy the pipeline, its layout, and render pass
 	m_device.destroyPipeline(m_graphicsPipeline, nullptr);
 	m_device.destroyPipelineLayout(m_pipelineLayout, nullptr);

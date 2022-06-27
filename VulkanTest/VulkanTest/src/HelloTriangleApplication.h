@@ -28,6 +28,8 @@ private:
 
 	void CreateImageViews();
 
+	void CreateFrameBuffers();
+
 	void MainLoop() const;
 
 	static std::vector<const char*> GetRequiredExtensions();
@@ -65,4 +67,6 @@ private:
 	vk::PipelineLayout m_pipelineLayout;
 
 	vk::Pipeline m_graphicsPipeline;
+
+	std::vector<vk::Framebuffer> m_swapChainFrameBuffers;
 };
