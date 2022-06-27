@@ -5,7 +5,9 @@
 class GraphicsPipeline
 {
 public:
-	static void CreateGraphicsPipeline(vk::PipelineLayout& pipeline_layout,
+	static void CreateGraphicsPipeline(vk::Pipeline& graphics_pipeline,
+	                                   vk::PipelineLayout& pipeline_layout,
+	                                   vk::RenderPass render_pass,
 	                                   vk::Device device,
 	                                   vk::Extent2D swap_chain_extent,
 	                                   const OpenGLShader& shader);

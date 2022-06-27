@@ -2,7 +2,18 @@
 
 #include "GraphicsPipeline.h"
 
-void GraphicsPipeline::CreateGraphicsPipeline(vk::PipelineLayout& pipeline_layout,
+/**
+ * \brief Creates a graphics pipeline
+ * \param graphics_pipeline The vk::Pipeline object reference to be allocated.
+ * \param pipeline_layout The vk::PipelineLayout object reference that is allocated and later used.
+ * \param render_pass A render pass that determines coloring.
+ * \param device The logical device that will handle object creations.
+ * \param swap_chain_extent The extents of the current screen.
+ * \param shader The shaders that are being used for the pipeline.
+ */
+void GraphicsPipeline::CreateGraphicsPipeline(vk::Pipeline& graphics_pipeline,
+                                              vk::PipelineLayout& pipeline_layout,
+                                              vk::RenderPass render_pass,
                                               const vk::Device device,
                                               vk::Extent2D swap_chain_extent,
                                               const OpenGLShader& shader)
@@ -147,6 +158,33 @@ void GraphicsPipeline::CreateGraphicsPipeline(vk::PipelineLayout& pipeline_layou
 	if (device.createPipelineLayout(&pipeline_layout_info, nullptr, &pipeline_layout) != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to create pipeline layout!");
 
+	// Pipeline create info
+	vk::GraphicsPipelineCreateInfo pipeline_info{
+		.stageCount = 2,
+		.pStages = shader_stages,
+		.pVertexInputState = &vertex_input_info,
+		.pInputAssemblyState = &input_assembly,
+		.pViewportState = &viewport_state,
+		.pRasterizationState = &rasterizer,
+		.pMultisampleState = &multisampling,
+		// optional
+		.pDepthStencilState = nullptr,
+		.pColorBlendState = &color_blending,
+		// optional
+		.pDynamicState = nullptr,
+		.layout = pipeline_layout,
+		.renderPass = render_pass,
+		.subpass = 0,
+		// optional
+		.basePipelineHandle = VK_NULL_HANDLE,
+		// optional
+		.basePipelineIndex = -1
+	};
+
+	if (device.createGraphicsPipelines(VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &graphics_pipeline) !=
+	    vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create graphics pipeline!");
+
 	// End of Code
 	// Since shader modules get converted to machine code, they can be destroyed
 	device.destroyShaderModule(frag_shader_module, nullptr);
@@ -154,7 +192,7 @@ void GraphicsPipeline::CreateGraphicsPipeline(vk::PipelineLayout& pipeline_layou
 }
 
 void GraphicsPipeline::CreateRenderPass(vk::RenderPass& render_pass,
-                                        vk::Device device,
+                                        const vk::Device device,
                                         vk::Format swap_chain_image_format)
 {
 	// Attachment Description

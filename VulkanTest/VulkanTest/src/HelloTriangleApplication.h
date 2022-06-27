@@ -63,4 +63,6 @@ private:
 	vk::RenderPass m_renderPass;
 
 	vk::PipelineLayout m_pipelineLayout;
+
+	vk::Pipeline m_graphicsPipeline;
 };
