@@ -32,9 +32,13 @@ private:
 
 	void CreateCommandBuffers();
 
-	void RecordCommandBuffers(vk::CommandBuffer command_buffer, uint32_t image_index);
+	void RecordCommandBuffer(vk::CommandBuffer command_buffer, uint32_t image_index);
 
-	void MainLoop() const;
+	void CreateSyncObjects();
+
+	void MainLoop();
+
+	void DrawFrame();
 
 	static std::vector<const char*> GetRequiredExtensions();
 
@@ -77,4 +81,10 @@ private:
 	vk::CommandPool m_commandPool;
 
 	vk::CommandBuffer m_commandBuffer;
+
+	vk::Semaphore m_imageAvailableSemaphore;
+
+	vk::Semaphore m_renderFinishedSemaphore;
+
+	vk::Fence m_inFlightFence;
 };

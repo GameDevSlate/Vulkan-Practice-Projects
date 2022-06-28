@@ -219,12 +219,23 @@ void GraphicsPipeline::CreateRenderPass(vk::RenderPass& render_pass,
 		.pColorAttachments = &color_attachment_ref
 	};
 
+	vk::SubpassDependency dependency{
+		.srcSubpass = VK_SUBPASS_EXTERNAL,
+		.dstSubpass = 0,
+		.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
+		.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
+		.srcAccessMask = vk::AccessFlagBits::eNone,
+		.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite
+	};
+
 	// Render pass
 	vk::RenderPassCreateInfo render_pass_info{
 		.attachmentCount = 1,
 		.pAttachments = &color_attachment,
 		.subpassCount = 1,
-		.pSubpasses = &subpass
+		.pSubpasses = &subpass,
+		.dependencyCount = 1,
+		.pDependencies = &dependency
 	};
 
 	if (device.createRenderPass(&render_pass_info, nullptr, &render_pass) != vk::Result::eSuccess)
