@@ -111,6 +111,21 @@ void PhysicalDevice::CreateSwapChain(vk::SwapchainKHR& swap_chain,
 	swap_chain_extent = extent;
 }
 
+void PhysicalDevice::CreateCommandPool(vk::CommandPool& command_pool,
+                                       const vk::PhysicalDevice physical_device,
+                                       const vk::Device device)
+{
+	QueueFamilyIndices queue_family_indices = FindQueueFamilies(physical_device);
+
+	vk::CommandPoolCreateInfo pool_info{
+		.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+		.queueFamilyIndex = queue_family_indices.graphicsFamily.value()
+	};
+
+	if (device.createCommandPool(&pool_info, nullptr, &command_pool) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create command pool!");
+}
+
 bool PhysicalDevice::IsDeviceSuitable(const vk::PhysicalDevice device)
 {
 	QueueFamilyIndices indices = FindQueueFamilies(device);

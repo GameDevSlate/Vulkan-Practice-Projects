@@ -52,6 +52,10 @@ void HelloTriangleApplication::InitVulkan()
 	                                         m_swapChainExtent, triangle_shader);
 
 	CreateFrameBuffers();
+
+	PhysicalDevice::CreateCommandPool(m_commandPool, m_physicalDevice, m_device);
+
+	CreateCommandBuffers();
 }
 
 void HelloTriangleApplication::CreateInstance()
@@ -164,6 +168,61 @@ void HelloTriangleApplication::CreateFrameBuffers()
 	}
 }
 
+void HelloTriangleApplication::CreateCommandBuffers()
+{
+	vk::CommandBufferAllocateInfo alloc_info{
+		.commandPool = m_commandPool,
+		.level = vk::CommandBufferLevel::ePrimary,
+		.commandBufferCount = 1
+	};
+
+	if (m_device.allocateCommandBuffers(&alloc_info, &m_commandBuffer) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to allocate command buffers!");
+}
+
+void HelloTriangleApplication::RecordCommandBuffers(vk::CommandBuffer command_buffer, uint32_t image_index)
+{
+	vk::CommandBufferBeginInfo begin_info{
+		// optional
+		// .flags,
+		// optional
+		.pInheritanceInfo = nullptr
+	};
+
+	if (command_buffer.begin(&begin_info) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to being recording command buffer!");
+
+	vk::RenderPassBeginInfo render_pass_info{
+		.renderPass = m_renderPass,
+		.framebuffer = m_swapChainFrameBuffers[image_index],
+		.renderArea{
+			.offset = {0, 0},
+			.extent = m_swapChainExtent
+		}
+	};
+
+	vk::ClearValue clear_color{
+		.color = vk::ArrayWrapper1D<float, 4>{{0.0f, 0.0f, 0.0f, 1.0f}}
+	};
+
+	render_pass_info.clearValueCount = 1;
+	render_pass_info.pClearValues = &clear_color;
+
+	// Begin recording commands
+
+	command_buffer.beginRenderPass(&render_pass_info, vk::SubpassContents::eInline);
+
+	command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_graphicsPipeline);
+
+	command_buffer.draw(3, 1, 0, 0);
+
+	// End recording commands
+
+	command_buffer.endRenderPass();
+
+	command_buffer.end();
+}
+
 void HelloTriangleApplication::MainLoop() const
 {
 	while (!glfwWindowShouldClose(m_window)) {
@@ -173,12 +232,11 @@ void HelloTriangleApplication::MainLoop() const
 
 std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 {
-	uint32_t glfwExtensionCount = 0;
-	const char** glfwExtensions;
+	uint32_t glfw_extension_count = 0;
 
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+	const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
 
-	std::vector extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+	std::vector extensions(glfw_extensions, glfw_extensions + glfw_extension_count);
 
 	if (ValidationLayers::enable_validation_layers)
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -188,6 +246,9 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 
 void HelloTriangleApplication::CleanUp() const
 {
+	// Destroy command pool
+	m_device.destroyCommandPool(m_commandPool, nullptr);
+
 	// Destroy swap chain frame buffers
 	for (auto framebuffer : m_swapChainFrameBuffers)
 		m_device.destroyFramebuffer(framebuffer, nullptr);

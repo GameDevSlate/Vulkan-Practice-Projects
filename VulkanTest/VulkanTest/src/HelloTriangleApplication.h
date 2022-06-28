@@ -30,6 +30,10 @@ private:
 
 	void CreateFrameBuffers();
 
+	void CreateCommandBuffers();
+
+	void RecordCommandBuffers(vk::CommandBuffer command_buffer, uint32_t image_index);
+
 	void MainLoop() const;
 
 	static std::vector<const char*> GetRequiredExtensions();
@@ -69,4 +73,8 @@ private:
 	vk::Pipeline m_graphicsPipeline;
 
 	std::vector<vk::Framebuffer> m_swapChainFrameBuffers;
+
+	vk::CommandPool m_commandPool;
+
+	vk::CommandBuffer m_commandBuffer;
 };

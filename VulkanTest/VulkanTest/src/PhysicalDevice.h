@@ -21,6 +21,8 @@ public:
 	                            vk::PhysicalDevice physical_device,
 	                            vk::Device device);
 
+	static void CreateCommandPool(vk::CommandPool& command_pool, vk::PhysicalDevice physical_device, vk::Device device);
+
 private:
 	struct SwapChainSupportDetails
 	{
