@@ -49,7 +49,7 @@ private:
 	static bool IsDeviceSuitable(vk::PhysicalDevice device);
 
 	// This is for finding the best suitable device out of many
-	static int RateDeviceSuitability(vk::PhysicalDevice device);
+	static unsigned RateDeviceSuitability(vk::PhysicalDevice device);
 
 	static bool CheckDeviceExtensionSupport(vk::PhysicalDevice device);
 
@@ -75,5 +75,5 @@ private:
 	// The current window of the application being used
 	inline static GLFWwindow* m_appWindow;
 
-	inline static const std::vector<const char*> device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+	inline static const std::vector<const char*> s_device_extensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };

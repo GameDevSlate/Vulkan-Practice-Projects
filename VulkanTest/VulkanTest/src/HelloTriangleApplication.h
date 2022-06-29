@@ -1,5 +1,6 @@
 // Adding the Vulkan C++ header, and ignoring all warnings
 // the are only "use enum class instead" warning.
+#pragma once
 #pragma warning(push, 0)
 #include<vulkan/vulkan.hpp>
 #pragma warning(pop)

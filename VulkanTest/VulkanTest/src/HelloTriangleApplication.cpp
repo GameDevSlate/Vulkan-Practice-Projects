@@ -78,7 +78,7 @@ void HelloTriangleApplication::CreateInstance()
 	// Creating a structure chain for .pNext Pointers
 	vk::StructureChain<vk::InstanceCreateInfo, vk::DebugUtilsMessengerCreateInfoEXT> chain;
 
-	vk::InstanceCreateInfo& create_info = chain.get<vk::InstanceCreateInfo>();
+	auto& create_info = chain.get<vk::InstanceCreateInfo>();
 
 	// Creating the information to create an instance
 	create_info.pApplicationInfo = &application_info;
@@ -121,6 +121,8 @@ void HelloTriangleApplication::CreateSurface()
 
 void HelloTriangleApplication::CreateImageViews()
 {
+	// Populate the amount of available swap chain image views
+	// based on the amount of swap chain images
 	m_swapChainImageViews.resize(m_swapChainImages.size());
 
 	for (size_t i = 0; i < m_swapChainImages.size(); i++) {
@@ -151,6 +153,8 @@ void HelloTriangleApplication::CreateImageViews()
 
 void HelloTriangleApplication::CreateFrameBuffers()
 {
+	// Populate the amount of frame buffers
+	// based on the amount of image views
 	m_swapChainFrameBuffers.resize(m_swapChainImageViews.size());
 
 	for (size_t i = 0; i < m_swapChainImageViews.size(); i++) {
@@ -182,7 +186,7 @@ void HelloTriangleApplication::CreateCommandBuffers()
 		throw std::runtime_error("Failed to allocate command buffers!");
 }
 
-void HelloTriangleApplication::RecordCommandBuffer(vk::CommandBuffer command_buffer, uint32_t image_index)
+void HelloTriangleApplication::RecordCommandBuffer(const vk::CommandBuffer command_buffer, const uint32_t image_index)
 {
 	vk::CommandBufferBeginInfo begin_info{
 		// optional
@@ -204,7 +208,7 @@ void HelloTriangleApplication::RecordCommandBuffer(vk::CommandBuffer command_buf
 	};
 
 	vk::ClearValue clear_color{
-		.color = vk::ArrayWrapper1D<float, 4>{{0.0f, 0.0f, 0.0f, 1.0f}}
+		.color = {vk::ArrayWrapper1D<float, 4>{{0.0f, 0.0f, 0.0f, 1.0f}}}
 	};
 
 	render_pass_info.clearValueCount = 1;

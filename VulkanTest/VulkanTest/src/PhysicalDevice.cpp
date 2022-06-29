@@ -36,12 +36,13 @@ void PhysicalDevice::PickPhysicalDevice(vk::PhysicalDevice& physical_device,
 	// Give a score to each possible device
 	for (const auto& device : devices) {
 
-		int score = RateDeviceSuitability(device);
+		unsigned int score = RateDeviceSuitability(device);
 		// Passing the score as an array proxy
 		candidates.insert({score, device});
 	}
 
-	// Check if the best candidate is suitable at all
+	// Check if the best candidate is suitable at all.
+	// rbegin() because highest score is the last in the multimap
 	if (candidates.rbegin()->first > 0)
 		physical_device = candidates.rbegin()->second;
 	else
@@ -61,14 +62,14 @@ void PhysicalDevice::CreateSwapChain(vk::SwapchainKHR& swap_chain,
 	vk::PresentModeKHR present_mode = ChooseSwapPresentMode(chain_present_modes);
 	vk::Extent2D extent = ChooseSwapExtent(chain_capabilities);
 
-	// Setting the minimum amount of images that should be in the swap chain
+	// Set the minimum amount of images that should be in the swap chain
 	uint32_t image_count = chain_capabilities.minImageCount + 1;
 
-	// Setting the maximum amount of images that should be in the swap chain ---zero means no maximum
+	// Set the maximum amount of images that should be in the swap chain ---zero means no maximum
 	if (chain_capabilities.maxImageCount > 0 && image_count > chain_capabilities.maxImageCount)
 		image_count = chain_capabilities.maxImageCount;
 
-	// Making the create info for the swap chain
+	// Make the create info for the swap chain
 	vk::SwapchainCreateInfoKHR create_info{
 		.surface = m_appSurface,
 		.minImageCount = image_count,
@@ -100,6 +101,7 @@ void PhysicalDevice::CreateSwapChain(vk::SwapchainKHR& swap_chain,
 	if (device.createSwapchainKHR(&create_info, nullptr, &swap_chain) != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to create swap chain!");
 
+	// Populate that amount of swap chain images
 	device.getSwapchainImagesKHR(swap_chain, &image_count, nullptr);
 
 	swap_chain_images.resize(image_count);
@@ -144,7 +146,7 @@ bool PhysicalDevice::IsDeviceSuitable(const vk::PhysicalDevice device)
 	return indices.IsComplete() && extensionsSupported && swap_chain_adequate;
 }
 
-int PhysicalDevice::RateDeviceSuitability(vk::PhysicalDevice device)
+unsigned PhysicalDevice::RateDeviceSuitability(vk::PhysicalDevice device)
 {
 	vk::PhysicalDeviceProperties device_properties;
 	vk::PhysicalDeviceFeatures device_features;
@@ -173,14 +175,14 @@ int PhysicalDevice::RateDeviceSuitability(vk::PhysicalDevice device)
 
 	score += extensions_supported ? 500 : 0;
 
-	// Add to the score if this device has supported swapchain capabilities
+	// Add to the score if this device has supported swap chain capabilities
 	if (extensions_supported) {
 		auto [capabilities, formats, present_modes] = QuerySwapChainSupport(device);
 
 		score += !formats.empty() && !present_modes.empty() ? 500 : 0;
 	}
 
-	// Application can't function without geomerty shaders
+	// Application can't function without geometry shaders
 	if (!device_features.geometryShader)
 		return 0;
 
@@ -191,7 +193,7 @@ bool PhysicalDevice::CheckDeviceExtensionSupport(const vk::PhysicalDevice device
 {
 	uint32_t extension_count;
 
-	// Count the ammount of extensions and assign them to extensionCount
+	// Count the amount of extensions and assign them to extensionCount
 	device.enumerateDeviceExtensionProperties(nullptr, &extension_count, nullptr);
 
 	std::vector<vk::ExtensionProperties> available_extensions(extension_count);
@@ -200,8 +202,9 @@ bool PhysicalDevice::CheckDeviceExtensionSupport(const vk::PhysicalDevice device
 	device.enumerateDeviceExtensionProperties(nullptr, &extension_count, available_extensions.data());
 
 	// Create a set of required extensions from the available extensions
-	std::set<std::string> required_extensions(device_extensions.begin(), device_extensions.end());
+	std::set<std::string> required_extensions(s_device_extensions.begin(), s_device_extensions.end());
 
+	// Discard all unnecessary extensions
 	for (const auto& extension : available_extensions)
 		required_extensions.erase(extension.extensionName);
 
@@ -215,13 +218,13 @@ PhysicalDevice::QueueFamilyIndices PhysicalDevice::FindQueueFamilies(const vk::P
 	QueueFamilyIndices indices;
 
 	// Logic to find queue family indices to populate struct with
-	uint32_t queueFamilyCount = 0;
+	uint32_t queue_family_count = 0;
 
-	device.getQueueFamilyProperties(&queueFamilyCount, nullptr);
+	device.getQueueFamilyProperties(&queue_family_count, nullptr);
 
-	std::vector<vk::QueueFamilyProperties> queue_families(queueFamilyCount);
+	std::vector<vk::QueueFamilyProperties> queue_families(queue_family_count);
 
-	device.getQueueFamilyProperties(&queueFamilyCount, queue_families.data());
+	device.getQueueFamilyProperties(&queue_family_count, queue_families.data());
 
 	int i = 0;
 	for (const auto& queue_family : queue_families) {
@@ -248,7 +251,7 @@ PhysicalDevice::QueueFamilyIndices PhysicalDevice::FindQueueFamilies(const vk::P
 
 PhysicalDevice::SwapChainSupportDetails PhysicalDevice::QuerySwapChainSupport(const vk::PhysicalDevice device)
 {
-	// Allocate the possible surface capabilites
+	// Allocate the possible surface capabilities
 	SwapChainSupportDetails details;
 	device.getSurfaceCapabilitiesKHR(m_appSurface, &details.capabilities);
 
@@ -261,7 +264,7 @@ PhysicalDevice::SwapChainSupportDetails PhysicalDevice::QuerySwapChainSupport(co
 		device.getSurfaceFormatsKHR(m_appSurface, &format_count, details.formats.data());
 	}
 
-	// Query the supporeted present modes
+	// Query the supported present modes
 	uint32_t present_mode_count;
 	device.getSurfacePresentModesKHR(m_appSurface, &present_mode_count, nullptr);
 
@@ -276,6 +279,7 @@ PhysicalDevice::SwapChainSupportDetails PhysicalDevice::QuerySwapChainSupport(co
 
 vk::SurfaceFormatKHR PhysicalDevice::ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& available_formats)
 {
+	// Look for 8-bit per channel sRGB format, with a nonlinear color space
 	for (const auto& available_format : available_formats)
 		if (available_format.format == vk::Format::eB8G8R8A8Srgb && available_format.colorSpace ==
 		    vk::ColorSpaceKHR::eSrgbNonlinear)

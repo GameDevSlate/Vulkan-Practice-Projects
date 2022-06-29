@@ -104,7 +104,7 @@ void GraphicsPipeline::CreateGraphicsPipeline(vk::Pipeline& graphics_pipeline,
 		.alphaToOneEnable = static_cast<vk::Bool32>(false)
 	};
 
-	/* If depth or stencil is being done, vk::PipelineDepthStencilStateCreateInfo would be needed */
+	/* If depth or stencil testing is being done, vk::PipelineDepthStencilStateCreateInfo would be needed */
 
 	// Color blending
 	vk::PipelineColorBlendAttachmentState color_blend_attachment{

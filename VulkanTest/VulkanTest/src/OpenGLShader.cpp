@@ -141,16 +141,15 @@ OpenGLShader::OpenGLShader(const std::string& file_path)
 
 	ShaderUtils::CreateCacheDirectoryIfNeeded();
 
-	std::string source = Readfile(file_path);
-
-	/*
-	 * Since this is a single file path, parse the file to see if there are
-	 * multiple shaders in it.
-	 */
-	auto shader_sources = PreProcess(source);
-
 	// This empty scope is for calculating the amount it takes to compile all shaders
 	{
+		std::string source = Readfile(file_path);
+
+		/*
+		 * Since this is a single file path, parse the file to see if there are
+		 * multiple shaders in it.
+		 */
+		auto shader_sources = PreProcess(source);
 		Timer timer;
 
 		CompileOrGetVulkanBinaries(shader_sources);
@@ -215,7 +214,7 @@ vk::ShaderModule OpenGLShader::CreateShaderModule(const vk::Device device,
 {
 	vk::ShaderModuleCreateInfo create_info{
 		/*
-		 * Since the data store inside the vulkan spirv binaries is an array
+		 * Since the data stored inside the vulkan spirv binaries is an array
 		 * of unsigned integers, when getting the size of the actual data,
 		 * it has to be multiplied by the size of uint32_t, which is the same.
 		 */
@@ -262,9 +261,8 @@ std::string OpenGLShader::Readfile(const std::string& file_path)
 	if (std::ifstream in(file_path, std::ios::in | std::ios::binary); in) {
 
 		in.seekg(0, std::ios::end);
-		size_t size = in.tellg();
 
-		if (size != -1) {
+		if (size_t size = in.tellg(); size != -1) {
 
 			result.resize(size);
 			in.seekg(0, std::ios::beg);

@@ -16,7 +16,7 @@ void LogicalDevice::CreateLogicalDevice(
 
 	// Create a set of different queue create infos for drawing and presenting
 	std::vector<vk::DeviceQueueCreateInfo> queue_create_infos;
-	std::set<uint32_t> unique_queue_families = {index_graphics_family.value(), index_present_family.value()};
+	std::set unique_queue_families = {index_graphics_family.value(), index_present_family.value()};
 
 	// Set the priority to 1.0f
 	float queue_priority = 1.0f;
@@ -38,8 +38,8 @@ void LogicalDevice::CreateLogicalDevice(
 	vk::DeviceCreateInfo create_info{
 		.queueCreateInfoCount = static_cast<uint32_t>(queue_create_infos.size()),
 		.pQueueCreateInfos = queue_create_infos.data(),
-		.enabledExtensionCount = static_cast<uint32_t>(PhysicalDevice::device_extensions.size()),
-		.ppEnabledExtensionNames = PhysicalDevice::device_extensions.data(),
+		.enabledExtensionCount = static_cast<uint32_t>(PhysicalDevice::s_device_extensions.size()),
+		.ppEnabledExtensionNames = PhysicalDevice::s_device_extensions.data(),
 		.pEnabledFeatures = &device_features
 	};
 
