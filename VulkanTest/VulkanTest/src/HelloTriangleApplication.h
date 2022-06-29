@@ -12,6 +12,8 @@ constexpr uint32_t WIDTH = 800;
 
 constexpr uint32_t HEIGHT = 600;
 
+constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+
 #pragma once
 class HelloTriangleApplication
 {
@@ -81,11 +83,13 @@ private:
 
 	vk::CommandPool m_commandPool;
 
-	vk::CommandBuffer m_commandBuffer;
+	std::vector<vk::CommandBuffer> m_commandBuffers;
 
-	vk::Semaphore m_imageAvailableSemaphore;
+	std::vector<vk::Semaphore> m_imageAvailableSemaphores;
 
-	vk::Semaphore m_renderFinishedSemaphore;
+	std::vector<vk::Semaphore> m_renderFinishedSemaphores;
 
-	vk::Fence m_inFlightFence;
+	std::vector<vk::Fence> m_inFlightFences;
+
+	uint32_t m_currentFrame = 0;
 };

@@ -176,13 +176,15 @@ void HelloTriangleApplication::CreateFrameBuffers()
 
 void HelloTriangleApplication::CreateCommandBuffers()
 {
+	m_commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
 	vk::CommandBufferAllocateInfo alloc_info{
 		.commandPool = m_commandPool,
 		.level = vk::CommandBufferLevel::ePrimary,
-		.commandBufferCount = 1
+		.commandBufferCount = static_cast<uint32_t>(m_commandBuffers.size())
 	};
 
-	if (m_device.allocateCommandBuffers(&alloc_info, &m_commandBuffer) != vk::Result::eSuccess)
+	if (m_device.allocateCommandBuffers(&alloc_info, m_commandBuffers.data()) != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to allocate command buffers!");
 }
 
@@ -231,16 +233,25 @@ void HelloTriangleApplication::RecordCommandBuffer(const vk::CommandBuffer comma
 
 void HelloTriangleApplication::CreateSyncObjects()
 {
+	m_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+	m_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+	m_inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+
 	vk::SemaphoreCreateInfo semaphore_info{};
 
 	vk::FenceCreateInfo fence_info{
 		.flags = vk::FenceCreateFlagBits::eSignaled
 	};
 
-	if (m_device.createSemaphore(&semaphore_info, nullptr, &m_imageAvailableSemaphore) != vk::Result::eSuccess ||
-	    m_device.createSemaphore(&semaphore_info, nullptr, &m_renderFinishedSemaphore) != vk::Result::eSuccess ||
-	    m_device.createFence(&fence_info, nullptr, &m_inFlightFence) != vk::Result::eSuccess)
-		throw std::runtime_error("Failed to create semaphores!");
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+
+		if (m_device.createSemaphore(&semaphore_info, nullptr, &m_imageAvailableSemaphores[i]) != vk::Result::eSuccess
+		    ||
+		    m_device.createSemaphore(&semaphore_info, nullptr, &m_renderFinishedSemaphores[i]) != vk::Result::eSuccess
+		    ||
+		    m_device.createFence(&fence_info, nullptr, &m_inFlightFences[i]) != vk::Result::eSuccess)
+			throw std::runtime_error("Failed to create synchronization objects for a frame!");
+	}
 }
 
 void HelloTriangleApplication::MainLoop()
@@ -256,22 +267,23 @@ void HelloTriangleApplication::MainLoop()
 void HelloTriangleApplication::DrawFrame()
 {
 	// Wait until previous (or first) frame is finished
-	m_device.waitForFences(1, &m_inFlightFence, true, UINT64_MAX);
+	m_device.waitForFences(1, &m_inFlightFences[m_currentFrame], true, UINT64_MAX);
 
-	m_device.resetFences(1, &m_inFlightFence);
+	m_device.resetFences(1, &m_inFlightFences[m_currentFrame]);
 
 	uint32_t image_index;
 
-	m_device.acquireNextImageKHR(m_swapChain, UINT64_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &image_index);
+	m_device.acquireNextImageKHR(m_swapChain, UINT64_MAX, m_imageAvailableSemaphores[m_currentFrame], VK_NULL_HANDLE,
+	                             &image_index);
 
-	m_commandBuffer.reset();
+	m_commandBuffers[m_currentFrame].reset();
 
-	RecordCommandBuffer(m_commandBuffer, image_index);
+	RecordCommandBuffer(m_commandBuffers[m_currentFrame], image_index);
 
 	// Queue submission and synchronization
 	vk::SubmitInfo submit_info;
 
-	vk::Semaphore wait_semaphores[] = {m_imageAvailableSemaphore};
+	vk::Semaphore wait_semaphores[] = {m_imageAvailableSemaphores[m_currentFrame]};
 
 	vk::PipelineStageFlags wait_stages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
 
@@ -279,14 +291,14 @@ void HelloTriangleApplication::DrawFrame()
 	submit_info.pWaitSemaphores = wait_semaphores;
 	submit_info.pWaitDstStageMask = wait_stages;
 	submit_info.commandBufferCount = 1;
-	submit_info.pCommandBuffers = &m_commandBuffer;
+	submit_info.pCommandBuffers = &m_commandBuffers[m_currentFrame];
 
-	vk::Semaphore signal_semaphores[] = {m_renderFinishedSemaphore};
+	vk::Semaphore signal_semaphores[] = {m_renderFinishedSemaphores[m_currentFrame]};
 
 	submit_info.signalSemaphoreCount = 1;
 	submit_info.pSignalSemaphores = signal_semaphores;
 
-	if (m_graphicsQueue.submit(1, &submit_info, m_inFlightFence) != vk::Result::eSuccess)
+	if (m_graphicsQueue.submit(1, &submit_info, m_inFlightFences[m_currentFrame]) != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to submit draw command buffer!");
 
 	// Presentation
@@ -304,6 +316,8 @@ void HelloTriangleApplication::DrawFrame()
 	present_info.pResults = nullptr;
 
 	m_presentQueue.presentKHR(&present_info);
+
+	m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
@@ -322,10 +336,12 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 
 void HelloTriangleApplication::CleanUp() const
 {
-	//Destroy semaphores and fence
-	m_device.destroySemaphore(m_imageAvailableSemaphore, nullptr);
-	m_device.destroySemaphore(m_renderFinishedSemaphore, nullptr);
-	m_device.destroyFence(m_inFlightFence, nullptr);
+	//Destroy semaphores and fences
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		m_device.destroySemaphore(m_imageAvailableSemaphores[i], nullptr);
+		m_device.destroySemaphore(m_renderFinishedSemaphores[i], nullptr);
+		m_device.destroyFence(m_inFlightFences[i], nullptr);
+	}
 
 	// Destroy command pool
 	m_device.destroyCommandPool(m_commandPool, nullptr);
