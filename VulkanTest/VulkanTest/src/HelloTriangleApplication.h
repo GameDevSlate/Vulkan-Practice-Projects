@@ -23,11 +23,17 @@ public:
 private:
 	void InitWindow();
 
+	static void FrameBufferResizeCallback(GLFWwindow* window, int width, int height);
+
 	void InitVulkan();
 
 	void CreateInstance();
 
 	void CreateSurface();
+
+	void RecreateSwapChain();
+
+	void CleanUpSwapChain();
 
 	void CreateCommandBuffers();
 
@@ -41,7 +47,7 @@ private:
 
 	static std::vector<const char*> GetRequiredExtensions();
 
-	void CleanUp() const;
+	void CleanUp();
 
 	GLFWwindow* m_window = nullptr;
 
@@ -86,6 +92,8 @@ private:
 	std::vector<vk::Semaphore> m_renderFinishedSemaphores;
 
 	std::vector<vk::Fence> m_inFlightFences;
+
+	bool m_frameBufferResized = false;
 
 	uint32_t m_currentFrame = 0;
 };
