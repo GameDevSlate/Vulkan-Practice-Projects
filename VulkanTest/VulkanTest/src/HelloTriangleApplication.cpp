@@ -4,12 +4,13 @@
 
 #include<iostream>
 
-#include"DebugUtils.h"
+#include "DebugUtils.h"
 #include "GraphicsPipeline.h"
-#include"LogicalDevice.h"
+#include "LogicalDevice.h"
 #include "OpenGLShader.h"
-#include"PhysicalDevice.h"
-#include"ValidationLayers.h"
+#include "PhysicalDevice.h"
+#include "SwapChain.h"
+#include "ValidationLayers.h"
 
 void HelloTriangleApplication::Run()
 {
@@ -36,13 +37,19 @@ void HelloTriangleApplication::InitWindow()
 void HelloTriangleApplication::InitVulkan()
 {
 	CreateInstance();
+
 	DebugUtils::SetupDebugMessenger(m_instance, m_debugMessenger);
+
 	CreateSurface();
+
 	PhysicalDevice::PickPhysicalDevice(m_physicalDevice, m_instance, m_surface, m_window);
+
 	LogicalDevice::CreateLogicalDevice(m_device, m_physicalDevice, m_graphicsQueue, m_presentQueue);
-	PhysicalDevice::CreateSwapChain(m_swapChain, m_swapChainImages, m_swapChainImageFormat, m_swapChainExtent,
-	                                m_physicalDevice, m_device);
-	CreateImageViews();
+
+	SwapChain::CreateSwapChain(m_swapChain, m_swapChainImages, m_swapChainImageFormat, m_swapChainExtent,
+	                           m_physicalDevice, m_device, m_surface, m_window);
+
+	SwapChain::CreateImageViews(m_swapChainImageViews, m_device, m_swapChainImages, m_swapChainImageFormat);
 
 	const OpenGLShader triangle_shader("Triangle", "assets/shaders/Triangle.vert", "assets/shaders/Triangle.frag");
 
@@ -51,7 +58,8 @@ void HelloTriangleApplication::InitVulkan()
 	GraphicsPipeline::CreateGraphicsPipeline(m_graphicsPipeline, m_pipelineLayout, m_renderPass, m_device,
 	                                         m_swapChainExtent, triangle_shader);
 
-	CreateFrameBuffers();
+	SwapChain::CreateFrameBuffers(m_swapChainFrameBuffers, m_device, m_swapChainImageViews, m_swapChainExtent,
+	                              m_renderPass);
 
 	PhysicalDevice::CreateCommandPool(m_commandPool, m_physicalDevice, m_device);
 
@@ -117,61 +125,6 @@ void HelloTriangleApplication::CreateSurface()
 	                                                    reinterpret_cast<VkSurfaceKHR*>(&m_surface))) !=
 	    vk::Result::eSuccess)
 		throw std::runtime_error("Failed to create window surface!");
-}
-
-void HelloTriangleApplication::CreateImageViews()
-{
-	// Populate the amount of available swap chain image views
-	// based on the amount of swap chain images
-	m_swapChainImageViews.resize(m_swapChainImages.size());
-
-	for (size_t i = 0; i < m_swapChainImages.size(); i++) {
-
-		vk::ImageViewCreateInfo create_info{
-			.image = m_swapChainImages[i],
-			.viewType = vk::ImageViewType::e2D,
-			.format = m_swapChainImageFormat,
-			.components = {
-				.r = vk::ComponentSwizzle::eIdentity,
-				.g = vk::ComponentSwizzle::eIdentity,
-				.b = vk::ComponentSwizzle::eIdentity,
-				.a = vk::ComponentSwizzle::eIdentity
-			},
-			.subresourceRange = {
-				.aspectMask = vk::ImageAspectFlagBits::eColor,
-				.baseMipLevel = 0,
-				.levelCount = 1,
-				.baseArrayLayer = 0,
-				.layerCount = 1
-			}
-		};
-
-		if (m_device.createImageView(&create_info, nullptr, &m_swapChainImageViews[i]) != vk::Result::eSuccess)
-			throw std::runtime_error("Failed to create image views");
-	}
-}
-
-void HelloTriangleApplication::CreateFrameBuffers()
-{
-	// Populate the amount of frame buffers
-	// based on the amount of image views
-	m_swapChainFrameBuffers.resize(m_swapChainImageViews.size());
-
-	for (size_t i = 0; i < m_swapChainImageViews.size(); i++) {
-		vk::ImageView attachments[] = {m_swapChainImageViews[i]};
-
-		vk::FramebufferCreateInfo framebuffer_info{
-			.renderPass = m_renderPass,
-			.attachmentCount = 1,
-			.pAttachments = attachments,
-			.width = m_swapChainExtent.width,
-			.height = m_swapChainExtent.height,
-			.layers = 1
-		};
-
-		if (m_device.createFramebuffer(&framebuffer_info, nullptr, &m_swapChainFrameBuffers[i]) != vk::Result::eSuccess)
-			throw std::runtime_error("Failed to create framebuffer!");
-	}
 }
 
 void HelloTriangleApplication::CreateCommandBuffers()

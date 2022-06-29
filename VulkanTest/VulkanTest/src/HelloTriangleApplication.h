@@ -29,10 +29,6 @@ private:
 
 	void CreateSurface();
 
-	void CreateImageViews();
-
-	void CreateFrameBuffers();
-
 	void CreateCommandBuffers();
 
 	void RecordCommandBuffer(vk::CommandBuffer command_buffer, uint32_t image_index);
