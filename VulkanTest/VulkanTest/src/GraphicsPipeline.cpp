@@ -2,6 +2,8 @@
 
 #include "GraphicsPipeline.h"
 
+#include "Vertex.h"
+
 /**
  * \brief Creates a graphics pipeline
  * \param graphics_pipeline The vk::Pipeline object reference to be allocated.
@@ -37,14 +39,15 @@ void GraphicsPipeline::CreateGraphicsPipeline(vk::Pipeline& graphics_pipeline,
 
 	vk::PipelineShaderStageCreateInfo shader_stages[] = {vert_shader_stage_info, frag_shader_stage_info};
 
-	// Temporarily make the vertex input be specified that there is no vertex data being passed,
-	// this is because the existing vertex shader has vertices hard coded
+	auto binding_description = Vertex::GetBindingDescription();
+	auto attribute_descriptions = Vertex::GetAttributeDescriptions();
+
 	vk::PipelineVertexInputStateCreateInfo vertex_input_info{
-		.vertexBindingDescriptionCount = 0,
+		.vertexBindingDescriptionCount = 1,
 		// optional
-		.pVertexBindingDescriptions = nullptr,
-		.vertexAttributeDescriptionCount = 0,
-		.pVertexAttributeDescriptions = nullptr // optional
+		.pVertexBindingDescriptions = &binding_description,
+		.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribute_descriptions.size()),
+		.pVertexAttributeDescriptions = attribute_descriptions.data() // optional
 	};
 
 	// Viewports and scissors

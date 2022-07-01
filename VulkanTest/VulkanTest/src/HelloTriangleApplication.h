@@ -8,6 +8,8 @@
 #include<vector>
 #include<GLFW/glfw3.h>
 
+#include"Vertex.h"
+
 constexpr uint32_t WIDTH = 800;
 
 constexpr uint32_t HEIGHT = 600;
@@ -85,6 +87,10 @@ private:
 
 	vk::CommandPool m_commandPool;
 
+	vk::Buffer m_vertexBuffer;
+
+	vk::DeviceMemory m_vertexBufferMemory;
+
 	std::vector<vk::CommandBuffer> m_commandBuffers;
 
 	std::vector<vk::Semaphore> m_imageAvailableSemaphores;
@@ -96,4 +102,10 @@ private:
 	bool m_frameBufferResized = false;
 
 	uint32_t m_currentFrame = 0;
+
+	const std::vector<Vertex> m_vertices = {
+		{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+		{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+	};
 };

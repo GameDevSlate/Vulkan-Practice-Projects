@@ -11,6 +11,7 @@
 #include "PhysicalDevice.h"
 #include "SwapChain.h"
 #include "ValidationLayers.h"
+#include "VertexBuffer.h"
 
 void HelloTriangleApplication::Run()
 {
@@ -69,6 +70,8 @@ void HelloTriangleApplication::InitVulkan()
 	                              m_renderPass);
 
 	PhysicalDevice::CreateCommandPool(m_commandPool, m_physicalDevice, m_device);
+
+	VertexBuffer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_device, m_physicalDevice, m_vertices);
 
 	CreateCommandBuffers();
 
@@ -233,7 +236,13 @@ void HelloTriangleApplication::RecordCommandBuffer(const vk::CommandBuffer comma
 
 	command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_graphicsPipeline);
 
-	command_buffer.draw(3, 1, 0, 0);
+	// Binding the vertex buffer
+	vk::Buffer vertex_buffers[] = {m_vertexBuffer};
+	vk::DeviceSize offsets[] = {0};
+
+	command_buffer.bindVertexBuffers(0, 1, vertex_buffers, offsets);
+
+	command_buffer.draw(static_cast<uint32_t>(m_vertices.size()), 1, 0, 0);
 
 	// End recording commands
 
@@ -363,7 +372,11 @@ void HelloTriangleApplication::CleanUp()
 {
 	CleanUpSwapChain();
 
-	//Destroy semaphores and fences
+	// Free allocated GPU memory for the vertices
+	m_device.destroyBuffer(m_vertexBuffer, nullptr);
+	m_device.freeMemory(m_vertexBufferMemory, nullptr);
+
+	// Destroy semaphores and fences
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 		m_device.destroySemaphore(m_imageAvailableSemaphores[i], nullptr);
 		m_device.destroySemaphore(m_renderFinishedSemaphores[i], nullptr);

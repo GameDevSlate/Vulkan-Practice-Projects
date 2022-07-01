@@ -179,6 +179,7 @@
     <ClCompile Include="src\ShaderLibrary.cpp" />
     <ClCompile Include="src\SwapChain.cpp" />
     <ClCompile Include="src\ValidationLayers.cpp" />
+    <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\Assert.h" />
@@ -196,6 +197,8 @@
     <ClInclude Include="src\ShaderLibrary.h" />
     <ClInclude Include="src\SwapChain.h" />
     <ClInclude Include="src\ValidationLayers.h" />
+    <ClInclude Include="src\Vertex.h" />
+    <ClInclude Include="src\VertexBuffer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
