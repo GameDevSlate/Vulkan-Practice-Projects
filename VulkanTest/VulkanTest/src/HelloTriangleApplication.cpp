@@ -71,7 +71,8 @@ void HelloTriangleApplication::InitVulkan()
 
 	PhysicalDevice::CreateCommandPool(m_commandPool, m_physicalDevice, m_device);
 
-	VertexBuffer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_device, m_physicalDevice, m_vertices);
+	VertexBuffer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_device, m_physicalDevice, m_vertices,
+	                                 m_commandPool, m_graphicsQueue);
 
 	CreateCommandBuffers();
 
