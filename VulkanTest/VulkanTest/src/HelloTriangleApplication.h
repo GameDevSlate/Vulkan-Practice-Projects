@@ -91,6 +91,10 @@ private:
 
 	vk::DeviceMemory m_vertexBufferMemory;
 
+	vk::Buffer m_indexBuffer;
+
+	vk::DeviceMemory m_indexBufferMemory;
+
 	std::vector<vk::CommandBuffer> m_commandBuffers;
 
 	std::vector<vk::Semaphore> m_imageAvailableSemaphores;
@@ -104,8 +108,18 @@ private:
 	uint32_t m_currentFrame = 0;
 
 	const std::vector<Vertex> m_vertices = {
-		{{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-		{{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+		{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+		{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+	};
+
+	const std::vector<uint16_t> m_indices = {
+		0,
+		1,
+		2,
+		2,
+		3,
+		0
 	};
 };

@@ -1,14 +1,14 @@
 ﻿#define VULKAN_HPP_NO_CONSTRUCTORS
 
-#include "VertexBuffer.h"
+#include "Buffer.h"
 
-void VertexBuffer::CreateVertexBuffer(vk::Buffer& vertex_buffer,
-                                      vk::DeviceMemory& vertex_buffer_memory,
-                                      const vk::Device device,
-                                      const vk::PhysicalDevice physical_device,
-                                      const std::vector<Vertex> vertices,
-                                      const vk::CommandPool command_pool,
-                                      const vk::Queue graphics_queue)
+void Buffer::CreateVertexBuffer(vk::Buffer& vertex_buffer,
+                                vk::DeviceMemory& vertex_buffer_memory,
+                                const vk::Device device,
+                                const vk::PhysicalDevice physical_device,
+                                const std::vector<Vertex> vertices,
+                                const vk::CommandPool command_pool,
+                                const vk::Queue graphics_queue)
 {
 	vk::DeviceSize buffer_size = sizeof(vertices[0]) * vertices.size();
 
@@ -38,13 +38,45 @@ void VertexBuffer::CreateVertexBuffer(vk::Buffer& vertex_buffer,
 	device.freeMemory(staging_buffer_memory, nullptr);
 }
 
-void VertexBuffer::CreateBuffer(const vk::Device device,
-                                const vk::PhysicalDevice physical_device,
-                                vk::DeviceSize size,
-                                vk::BufferUsageFlags usage,
-                                const vk::MemoryPropertyFlags properties,
-                                vk::Buffer& buffer,
-                                vk::DeviceMemory& buffer_memory)
+void Buffer::CreateIndexBuffer(vk::Buffer& index_buffer,
+                               vk::DeviceMemory& index_buffer_memory,
+                               const vk::Device device,
+                               const vk::PhysicalDevice physical_device,
+                               std::vector<uint16_t> indices,
+                               const vk::CommandPool command_pool,
+                               const vk::Queue graphics_queue)
+{
+	vk::DeviceSize buffer_size = sizeof(indices[0]) * indices.size();
+
+	vk::Buffer staging_buffer;
+	vk::DeviceMemory staging_buffer_memory;
+
+	CreateBuffer(device, physical_device, buffer_size, vk::BufferUsageFlagBits::eTransferSrc,
+	             vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent, staging_buffer,
+	             staging_buffer_memory);
+
+	void* data;
+	device.mapMemory(staging_buffer_memory, 0, buffer_size, {}, &data);
+	memcpy(data, indices.data(), buffer_size);
+	device.unmapMemory(staging_buffer_memory);
+
+	CreateBuffer(device, physical_device, buffer_size,
+	             vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
+	             vk::MemoryPropertyFlagBits::eDeviceLocal, index_buffer, index_buffer_memory);
+
+	CopyBuffer(device, command_pool, graphics_queue, staging_buffer, index_buffer, buffer_size);
+
+	device.destroyBuffer(staging_buffer, nullptr);
+	device.freeMemory(staging_buffer_memory, nullptr);
+}
+
+void Buffer::CreateBuffer(const vk::Device device,
+                          const vk::PhysicalDevice physical_device,
+                          vk::DeviceSize size,
+                          vk::BufferUsageFlags usage,
+                          const vk::MemoryPropertyFlags properties,
+                          vk::Buffer& buffer,
+                          vk::DeviceMemory& buffer_memory)
 {
 	vk::BufferCreateInfo buffer_info{
 		.size = size,
@@ -69,12 +101,12 @@ void VertexBuffer::CreateBuffer(const vk::Device device,
 	device.bindBufferMemory(buffer, buffer_memory, 0);
 }
 
-void VertexBuffer::CopyBuffer(const vk::Device device,
-                              vk::CommandPool command_pool,
-                              const vk::Queue graphics_queue,
-                              const vk::Buffer src_buffer,
-                              const vk::Buffer dst_buffer,
-                              vk::DeviceSize size)
+void Buffer::CopyBuffer(const vk::Device device,
+                        vk::CommandPool command_pool,
+                        const vk::Queue graphics_queue,
+                        const vk::Buffer src_buffer,
+                        const vk::Buffer dst_buffer,
+                        vk::DeviceSize size)
 {
 	vk::CommandBufferAllocateInfo alloc_info{
 		.commandPool = command_pool,
@@ -115,9 +147,9 @@ void VertexBuffer::CopyBuffer(const vk::Device device,
 	device.freeCommandBuffers(command_pool, 1, &command_buffer);
 }
 
-uint32_t VertexBuffer::FindMemoryType(const uint32_t type_filter,
-                                      const vk::MemoryPropertyFlags properties,
-                                      const vk::PhysicalDevice physical_device)
+uint32_t Buffer::FindMemoryType(const uint32_t type_filter,
+                                const vk::MemoryPropertyFlags properties,
+                                const vk::PhysicalDevice physical_device)
 {
 	vk::PhysicalDeviceMemoryProperties mem_properties{};
 	physical_device.getMemoryProperties(&mem_properties);

@@ -4,7 +4,7 @@
 
 #include "Vertex.h"
 
-class VertexBuffer
+class Buffer
 {
 public:
 	static void CreateVertexBuffer(vk::Buffer& vertex_buffer,
@@ -14,6 +14,14 @@ public:
 	                               std::vector<Vertex> vertices,
 	                               vk::CommandPool command_pool,
 	                               vk::Queue graphics_queue);
+
+	static void CreateIndexBuffer(vk::Buffer& index_buffer,
+	                              vk::DeviceMemory& index_buffer_memory,
+	                              vk::Device device,
+	                              vk::PhysicalDevice physical_device,
+	                              std::vector<uint16_t> indices,
+	                              vk::CommandPool command_pool,
+	                              vk::Queue graphics_queue);
 
 private:
 	static void CreateBuffer(vk::Device device,

@@ -4,6 +4,7 @@
 
 #include<iostream>
 
+#include "Buffer.h"
 #include "DebugUtils.h"
 #include "GraphicsPipeline.h"
 #include "LogicalDevice.h"
@@ -11,7 +12,6 @@
 #include "PhysicalDevice.h"
 #include "SwapChain.h"
 #include "ValidationLayers.h"
-#include "VertexBuffer.h"
 
 void HelloTriangleApplication::Run()
 {
@@ -71,8 +71,11 @@ void HelloTriangleApplication::InitVulkan()
 
 	PhysicalDevice::CreateCommandPool(m_commandPool, m_physicalDevice, m_device);
 
-	VertexBuffer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_device, m_physicalDevice, m_vertices,
-	                                 m_commandPool, m_graphicsQueue);
+	Buffer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_device, m_physicalDevice, m_vertices,
+	                           m_commandPool, m_graphicsQueue);
+
+	Buffer::CreateIndexBuffer(m_indexBuffer, m_indexBufferMemory, m_device, m_physicalDevice, m_indices, m_commandPool,
+	                          m_graphicsQueue);
 
 	CreateCommandBuffers();
 
@@ -243,7 +246,9 @@ void HelloTriangleApplication::RecordCommandBuffer(const vk::CommandBuffer comma
 
 	command_buffer.bindVertexBuffers(0, 1, vertex_buffers, offsets);
 
-	command_buffer.draw(static_cast<uint32_t>(m_vertices.size()), 1, 0, 0);
+	command_buffer.bindIndexBuffer(m_indexBuffer, 0, vk::IndexType::eUint16);
+
+	command_buffer.drawIndexed(static_cast<uint32_t>(m_indices.size()), 1, 0, 0, 0);
 
 	// End recording commands
 
@@ -372,6 +377,10 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 void HelloTriangleApplication::CleanUp()
 {
 	CleanUpSwapChain();
+
+	// Free allocated GPU memory for the indices
+	m_device.destroyBuffer(m_indexBuffer, nullptr);
+	m_device.freeMemory(m_indexBufferMemory, nullptr);
 
 	// Free allocated GPU memory for the vertices
 	m_device.destroyBuffer(m_vertexBuffer, nullptr);
