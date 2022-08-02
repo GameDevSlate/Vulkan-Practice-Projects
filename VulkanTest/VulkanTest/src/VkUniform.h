@@ -9,6 +9,10 @@ public:
 	static void UpdateUniformBuffer(vk::Device device,
 	                                uint32_t current_image,
 	                                vk::Extent2D swap_chain_extent,
+<<<<<<< HEAD
+	                                const std::vector<vk::DeviceMemory>&
+=======
 	                                std::vector<vk::DeviceMemory>&
+>>>>>>> main
 	                                uniform_buffers_memory);
 };
