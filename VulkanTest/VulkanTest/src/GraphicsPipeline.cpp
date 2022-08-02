@@ -11,6 +11,7 @@
  * \param render_pass A render pass that determines coloring.
  * \param device The logical device that will handle object creations.
  * \param swap_chain_extent The extents of the current screen.
+ * \param descriptor_set_layout The descriptor set layout used so that shaders know what uniforms to use.
  * \param shader The shaders that are being used for the pipeline.
  */
 void GraphicsPipeline::CreateGraphicsPipeline(vk::Pipeline& graphics_pipeline,
@@ -18,6 +19,7 @@ void GraphicsPipeline::CreateGraphicsPipeline(vk::Pipeline& graphics_pipeline,
                                               vk::RenderPass render_pass,
                                               const vk::Device device,
                                               vk::Extent2D swap_chain_extent,
+                                              const vk::DescriptorSetLayout descriptor_set_layout,
                                               const OpenGLShader& shader)
 {
 	vk::ShaderModule vert_shader_module = OpenGLShader::CreateShaderModule(device, shader,
@@ -148,9 +150,9 @@ void GraphicsPipeline::CreateGraphicsPipeline(vk::Pipeline& graphics_pipeline,
 	// Pipeline layout
 	vk::PipelineLayoutCreateInfo pipeline_layout_info{
 		// optional
-		.setLayoutCount = 0,
+		.setLayoutCount = 1,
 		// optional
-		.pSetLayouts = nullptr,
+		.pSetLayouts = &descriptor_set_layout,
 		// optional
 		.pushConstantRangeCount = 0,
 		// optional

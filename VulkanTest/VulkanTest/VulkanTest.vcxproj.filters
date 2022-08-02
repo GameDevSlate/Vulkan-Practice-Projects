@@ -54,6 +54,9 @@
     <ClCompile Include="src\Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\VkUniform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\HelloTriangleApplication.h">
@@ -107,5 +110,14 @@
     <ClInclude Include="src\Buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\UniformBufferObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VkUniform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\Triangle.vert" />
   </ItemGroup>
 </Project>

@@ -79,6 +79,8 @@ private:
 
 	vk::RenderPass m_renderPass;
 
+	vk::DescriptorSetLayout m_descriptorSetLayout;
+
 	vk::PipelineLayout m_pipelineLayout;
 
 	vk::Pipeline m_graphicsPipeline;
@@ -94,6 +96,10 @@ private:
 	vk::Buffer m_indexBuffer;
 
 	vk::DeviceMemory m_indexBufferMemory;
+
+	std::vector<vk::Buffer> m_uniformBuffers;
+
+	std::vector<vk::DeviceMemory> m_uniformBuffersMemory;
 
 	std::vector<vk::CommandBuffer> m_commandBuffers;
 

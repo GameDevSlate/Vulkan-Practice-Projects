@@ -2,6 +2,9 @@
 
 #include "Buffer.h"
 
+#include "HelloTriangleApplication.h"
+#include "UniformBufferObject.h"
+
 void Buffer::CreateVertexBuffer(vk::Buffer& vertex_buffer,
                                 vk::DeviceMemory& vertex_buffer_memory,
                                 const vk::Device device,
@@ -42,7 +45,7 @@ void Buffer::CreateIndexBuffer(vk::Buffer& index_buffer,
                                vk::DeviceMemory& index_buffer_memory,
                                const vk::Device device,
                                const vk::PhysicalDevice physical_device,
-                               std::vector<uint16_t> indices,
+                               const std::vector<uint16_t> indices,
                                const vk::CommandPool command_pool,
                                const vk::Queue graphics_queue)
 {
@@ -68,6 +71,22 @@ void Buffer::CreateIndexBuffer(vk::Buffer& index_buffer,
 
 	device.destroyBuffer(staging_buffer, nullptr);
 	device.freeMemory(staging_buffer_memory, nullptr);
+}
+
+void Buffer::CreateUniformBuffers(std::vector<vk::Buffer>& uniform_buffers,
+                                  std::vector<vk::DeviceMemory>& uniform_buffers_memory,
+                                  const vk::Device device,
+                                  const vk::PhysicalDevice physical_device)
+{
+	vk::DeviceSize buffer_size = sizeof(UniformBufferObject);
+
+	uniform_buffers.resize(MAX_FRAMES_IN_FLIGHT);
+	uniform_buffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+		CreateBuffer(device, physical_device, buffer_size, vk::BufferUsageFlagBits::eUniformBuffer,
+		             vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+		             uniform_buffers[i], uniform_buffers_memory[i]);
 }
 
 void Buffer::CreateBuffer(const vk::Device device,

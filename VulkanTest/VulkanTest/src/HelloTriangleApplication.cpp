@@ -12,6 +12,7 @@
 #include "PhysicalDevice.h"
 #include "SwapChain.h"
 #include "ValidationLayers.h"
+#include "VkUniform.h"
 
 void HelloTriangleApplication::Run()
 {
@@ -63,8 +64,10 @@ void HelloTriangleApplication::InitVulkan()
 
 	GraphicsPipeline::CreateRenderPass(m_renderPass, m_device, m_swapChainImageFormat);
 
+	VkUniform::CreateDescriptorSetLayout(m_device, m_descriptorSetLayout);
+
 	GraphicsPipeline::CreateGraphicsPipeline(m_graphicsPipeline, m_pipelineLayout, m_renderPass, m_device,
-	                                         m_swapChainExtent, triangle_shader);
+	                                         m_swapChainExtent, m_descriptorSetLayout, triangle_shader);
 
 	SwapChain::CreateFrameBuffers(m_swapChainFrameBuffers, m_device, m_swapChainImageViews, m_swapChainExtent,
 	                              m_renderPass);
@@ -76,6 +79,8 @@ void HelloTriangleApplication::InitVulkan()
 
 	Buffer::CreateIndexBuffer(m_indexBuffer, m_indexBufferMemory, m_device, m_physicalDevice, m_indices, m_commandPool,
 	                          m_graphicsQueue);
+
+	Buffer::CreateUniformBuffers(m_uniformBuffers, m_uniformBuffersMemory, m_device, m_physicalDevice);
 
 	CreateCommandBuffers();
 
@@ -167,7 +172,7 @@ void HelloTriangleApplication::RecreateSwapChain()
 	GraphicsPipeline::CreateRenderPass(m_renderPass, m_device, m_swapChainImageFormat);
 
 	GraphicsPipeline::CreateGraphicsPipeline(m_graphicsPipeline, m_pipelineLayout, m_renderPass, m_device,
-	                                         m_swapChainExtent, triangle_shader);
+	                                         m_swapChainExtent, m_descriptorSetLayout, triangle_shader);
 
 	SwapChain::CreateFrameBuffers(m_swapChainFrameBuffers, m_device, m_swapChainImageViews, m_swapChainExtent,
 	                              m_renderPass);
@@ -377,6 +382,13 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 void HelloTriangleApplication::CleanUp()
 {
 	CleanUpSwapChain();
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		m_device.destroyBuffer(m_uniformBuffers[i], nullptr);
+		m_device.freeMemory(m_uniformBuffersMemory[i], nullptr);
+	}
+
+	m_device.destroyDescriptorSetLayout(m_descriptorSetLayout, nullptr);
 
 	// Free allocated GPU memory for the indices
 	m_device.destroyBuffer(m_indexBuffer, nullptr);

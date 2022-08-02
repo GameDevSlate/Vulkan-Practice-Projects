@@ -180,6 +180,7 @@
     <ClCompile Include="src\SwapChain.cpp" />
     <ClCompile Include="src\ValidationLayers.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
+    <ClCompile Include="src\VkUniform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\Assert.h" />
@@ -196,9 +197,14 @@
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\ShaderLibrary.h" />
     <ClInclude Include="src\SwapChain.h" />
+    <ClInclude Include="src\UniformBufferObject.h" />
     <ClInclude Include="src\ValidationLayers.h" />
     <ClInclude Include="src\Vertex.h" />
     <ClInclude Include="src\Buffer.h" />
+    <ClInclude Include="src\VkUniform.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\Triangle.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

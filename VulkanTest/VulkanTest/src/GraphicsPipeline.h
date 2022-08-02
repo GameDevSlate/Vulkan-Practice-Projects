@@ -10,6 +10,7 @@ public:
 	                                   vk::RenderPass render_pass,
 	                                   vk::Device device,
 	                                   vk::Extent2D swap_chain_extent,
+	                                   vk::DescriptorSetLayout descriptor_set_layout,
 	                                   const OpenGLShader& shader);
 
 	static void CreateRenderPass(vk::RenderPass& render_pass, vk::Device device, vk::Format swap_chain_image_format);

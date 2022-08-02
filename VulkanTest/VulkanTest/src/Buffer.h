@@ -23,6 +23,11 @@ public:
 	                              vk::CommandPool command_pool,
 	                              vk::Queue graphics_queue);
 
+	static void CreateUniformBuffers(std::vector<vk::Buffer>& uniform_buffers,
+	                                 std::vector<vk::DeviceMemory>& uniform_buffers_memory,
+	                                 vk::Device device,
+	                                 vk::PhysicalDevice physical_device);
+
 private:
 	static void CreateBuffer(vk::Device device,
 	                         vk::PhysicalDevice physical_device,
