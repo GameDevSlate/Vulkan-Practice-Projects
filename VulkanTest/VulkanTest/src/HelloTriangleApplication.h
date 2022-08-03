@@ -101,6 +101,10 @@ private:
 
 	std::vector<vk::DeviceMemory> m_uniformBuffersMemory;
 
+	vk::DescriptorPool m_descriptorPool;
+
+	std::vector<vk::DescriptorSet> m_descriptorSets;
+
 	std::vector<vk::CommandBuffer> m_commandBuffers;
 
 	std::vector<vk::Semaphore> m_imageAvailableSemaphores;

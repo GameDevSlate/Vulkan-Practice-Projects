@@ -85,7 +85,7 @@ void GraphicsPipeline::CreateGraphicsPipeline(vk::Pipeline& graphics_pipeline,
 		.rasterizerDiscardEnable = static_cast<vk::Bool32>(false),
 		.polygonMode = vk::PolygonMode::eFill,
 		.cullMode = vk::CullModeFlagBits::eBack,
-		.frontFace = vk::FrontFace::eClockwise,
+		.frontFace = vk::FrontFace::eCounterClockwise,
 		.depthBiasEnable = static_cast<vk::Bool32>(false),
 		// optional
 		.depthBiasConstantFactor = 0.0f,

@@ -82,6 +82,11 @@ void HelloTriangleApplication::InitVulkan()
 
 	Buffer::CreateUniformBuffers(m_uniformBuffers, m_uniformBuffersMemory, m_device, m_physicalDevice);
 
+	VkUniform::CreateDescriptorPool(m_device, m_descriptorPool);
+
+	VkUniform::CreateDescriptorSets(m_device, m_descriptorSets, m_descriptorSetLayout, m_descriptorPool,
+	                                m_uniformBuffers);
+
 	CreateCommandBuffers();
 
 	CreateSyncObjects();
@@ -253,6 +258,9 @@ void HelloTriangleApplication::RecordCommandBuffer(const vk::CommandBuffer comma
 
 	command_buffer.bindIndexBuffer(m_indexBuffer, 0, vk::IndexType::eUint16);
 
+	command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_pipelineLayout, 0, 1,
+	                                  &m_descriptorSets[m_currentFrame], 0, nullptr);
+
 	command_buffer.drawIndexed(static_cast<uint32_t>(m_indices.size()), 1, 0, 0, 0);
 
 	// End recording commands
@@ -312,6 +320,8 @@ void HelloTriangleApplication::DrawFrame()
 	}
 	if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR)
 		throw std::runtime_error("Failed to acquire swap chain image!");
+
+	VkUniform::UpdateUniformBuffer(m_device, m_currentFrame, m_swapChainExtent, m_uniformBuffersMemory);
 
 	m_device.resetFences(1, &m_inFlightFences[m_currentFrame]);
 
@@ -383,11 +393,16 @@ void HelloTriangleApplication::CleanUp()
 {
 	CleanUpSwapChain();
 
+	// Destroy the uniform buffers and the memory related to them
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 		m_device.destroyBuffer(m_uniformBuffers[i], nullptr);
 		m_device.freeMemory(m_uniformBuffersMemory[i], nullptr);
 	}
 
+	// Destroy the descriptor pool
+	m_device.destroyDescriptorPool(m_descriptorPool, nullptr);
+
+	// Destroy the descriptor set layout(s)
 	m_device.destroyDescriptorSetLayout(m_descriptorSetLayout, nullptr);
 
 	// Free allocated GPU memory for the indices

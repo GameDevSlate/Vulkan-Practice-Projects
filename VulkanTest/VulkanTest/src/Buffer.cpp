@@ -81,7 +81,7 @@ void Buffer::CreateUniformBuffers(std::vector<vk::Buffer>& uniform_buffers,
 	vk::DeviceSize buffer_size = sizeof(UniformBufferObject);
 
 	uniform_buffers.resize(MAX_FRAMES_IN_FLIGHT);
-	uniform_buffers.resize(MAX_FRAMES_IN_FLIGHT);
+	uniform_buffers_memory.resize(MAX_FRAMES_IN_FLIGHT);
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 		CreateBuffer(device, physical_device, buffer_size, vk::BufferUsageFlagBits::eUniformBuffer,

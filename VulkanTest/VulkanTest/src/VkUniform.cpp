@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "HelloTriangleApplication.h"
 #include "UniformBufferObject.h"
 
 void VkUniform::CreateDescriptorSetLayout(const vk::Device device, vk::DescriptorSetLayout& descriptor_set_layout)
@@ -27,6 +28,66 @@ void VkUniform::CreateDescriptorSetLayout(const vk::Device device, vk::Descripto
 
 	if (device.createDescriptorSetLayout(&layout_info, nullptr, &descriptor_set_layout) != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to create descriptor set layout!");
+}
+
+void VkUniform::CreateDescriptorPool(vk::Device device, vk::DescriptorPool& descriptor_pool)
+{
+	vk::DescriptorPoolSize pool_size{
+		.descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT)
+	};
+
+	vk::DescriptorPoolCreateInfo pool_info{
+		.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT),
+		.poolSizeCount = 1,
+		.pPoolSizes = &pool_size
+	};
+
+	if (device.createDescriptorPool(&pool_info, nullptr, &descriptor_pool) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create descriptor pool!");
+}
+
+void VkUniform::CreateDescriptorSets(const vk::Device device,
+                                     std::vector<vk::DescriptorSet>& descriptor_sets,
+                                     const vk::DescriptorSetLayout descriptor_set_layout,
+                                     const vk::DescriptorPool descriptor_pool,
+                                     const std::vector<vk::Buffer> uniform_buffers)
+{
+	std::vector layouts(MAX_FRAMES_IN_FLIGHT, descriptor_set_layout);
+
+	vk::DescriptorSetAllocateInfo alloc_info{
+		.descriptorPool = descriptor_pool,
+		.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT),
+		.pSetLayouts = layouts.data()
+	};
+
+	descriptor_sets.resize(MAX_FRAMES_IN_FLIGHT);
+
+	if (device.allocateDescriptorSets(&alloc_info, descriptor_sets.data()) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to allocate descriptor sets");
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+
+		vk::DescriptorBufferInfo buffer_info{
+			.buffer = uniform_buffers[i],
+			.offset = 0,
+			.range = sizeof(UniformBufferObject)
+		};
+
+		vk::WriteDescriptorSet descriptor_write{
+			.dstSet = descriptor_sets[i],
+			.dstBinding = 0,
+			.dstArrayElement = 0,
+			.descriptorCount = 1,
+			.descriptorType = vk::DescriptorType::eUniformBuffer,
+			// Optional
+			.pImageInfo = nullptr,
+			.pBufferInfo = &buffer_info,
+			// Optional
+			.pTexelBufferView = nullptr
+		};
+
+		device.updateDescriptorSets(1, &descriptor_write, 0, nullptr);
+	}
 }
 
 void VkUniform::UpdateUniformBuffer(const vk::Device device,
