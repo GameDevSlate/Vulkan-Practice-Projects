@@ -141,7 +141,7 @@ void SwapChain::CreateImageViews(std::vector<vk::ImageView>& image_views,
  */
 void SwapChain::CreateFrameBuffers(std::vector<vk::Framebuffer>& frame_buffers,
                                    const vk::Device device,
-                                   const std::vector<vk::ImageView> image_views,
+                                   const std::vector<vk::ImageView>& image_views,
                                    vk::Extent2D extent,
                                    vk::RenderPass render_pass)
 {

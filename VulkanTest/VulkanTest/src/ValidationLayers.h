@@ -5,10 +5,11 @@
 class ValidationLayers
 {
 public:
+	static constexpr bool enable_validation_layers =
 #ifndef _DEBUG
-		static constexpr bool enable_validation_layers = false;
+		false;
 #else
-	static constexpr bool enable_validation_layers = true;
+		true;
 #endif
 
 	inline static const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};

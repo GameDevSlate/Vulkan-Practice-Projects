@@ -31,7 +31,7 @@ public:
 
 	static void CreateFrameBuffers(std::vector<vk::Framebuffer>& frame_buffers,
 	                               vk::Device device,
-	                               std::vector<vk::ImageView> image_views,
+	                               const std::vector<vk::ImageView>& image_views,
 	                               vk::Extent2D extent,
 	                               vk::RenderPass render_pass);
 

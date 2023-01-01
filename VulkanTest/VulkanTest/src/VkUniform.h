@@ -12,7 +12,7 @@ public:
 	                                 std::vector<vk::DescriptorSet>& descriptor_sets,
 	                                 vk::DescriptorSetLayout descriptor_set_layout,
 	                                 vk::DescriptorPool descriptor_pool,
-	                                 std::vector<vk::Buffer> uniform_buffers);
+	                                 const std::vector<vk::Buffer>& uniform_buffers);
 
 	static void UpdateUniformBuffer(vk::Device device,
 	                                uint32_t current_image,

@@ -172,9 +172,9 @@ OpenGLShader::OpenGLShader(const std::string& file_path)
  * \param vertex_src The vertex shader source code file location.
  * \param fragment_src The fragment shader source code file location.
  */
-OpenGLShader::OpenGLShader(const std::string& name,
+OpenGLShader::OpenGLShader(std::string name,
                            const std::string& vertex_src,
-                           const std::string& fragment_src) : m_name(name)
+                           const std::string& fragment_src) : m_name(std::move(name))
 {
 	// Assign the corresponding source code directories.
 	m_filePaths[vk::ShaderStageFlagBits::eVertex] = vertex_src;
@@ -219,7 +219,7 @@ vk::ShaderModule OpenGLShader::CreateShaderModule(const vk::Device device,
 		 * it has to be multiplied by the size of uint32_t, which is the same.
 		 */
 		.codeSize = shader.m_vulkanSpirv[stage].size() * sizeof(uint32_t),
-		.pCode = shader.m_vulkanSpirv[stage].data()
+		.pCode = shader.m_vulkanSpirv[stage].data(),
 	};
 
 	vk::ShaderModule shader_module;

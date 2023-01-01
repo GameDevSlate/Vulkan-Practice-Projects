@@ -11,7 +11,7 @@ class OpenGLShader : public Shader
 public:
 	OpenGLShader(const std::string& file_path);
 
-	OpenGLShader(const std::string& name,
+	OpenGLShader(std::string name,
 	             const std::string& vertex_src,
 	             const std::string& fragment_src);
 

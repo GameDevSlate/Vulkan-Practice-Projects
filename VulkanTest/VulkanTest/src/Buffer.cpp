@@ -9,7 +9,7 @@ void Buffer::CreateVertexBuffer(vk::Buffer& vertex_buffer,
                                 vk::DeviceMemory& vertex_buffer_memory,
                                 const vk::Device device,
                                 const vk::PhysicalDevice physical_device,
-                                const std::vector<Vertex> vertices,
+                                const std::vector<Vertex>& vertices,
                                 const vk::CommandPool command_pool,
                                 const vk::Queue graphics_queue)
 {
@@ -45,7 +45,7 @@ void Buffer::CreateIndexBuffer(vk::Buffer& index_buffer,
                                vk::DeviceMemory& index_buffer_memory,
                                const vk::Device device,
                                const vk::PhysicalDevice physical_device,
-                               const std::vector<uint16_t> indices,
+                               const std::vector<uint16_t>& indices,
                                const vk::CommandPool command_pool,
                                const vk::Queue graphics_queue)
 {

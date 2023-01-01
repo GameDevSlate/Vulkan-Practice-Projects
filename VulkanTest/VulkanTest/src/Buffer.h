@@ -11,7 +11,7 @@ public:
 	                               vk::DeviceMemory& vertex_buffer_memory,
 	                               vk::Device device,
 	                               vk::PhysicalDevice physical_device,
-	                               std::vector<Vertex> vertices,
+	                               const std::vector<Vertex>& vertices,
 	                               vk::CommandPool command_pool,
 	                               vk::Queue graphics_queue);
 
@@ -19,7 +19,7 @@ public:
 	                              vk::DeviceMemory& index_buffer_memory,
 	                              vk::Device device,
 	                              vk::PhysicalDevice physical_device,
-	                              std::vector<uint16_t> indices,
+	                              const std::vector<uint16_t>& indices,
 	                              vk::CommandPool command_pool,
 	                              vk::Queue graphics_queue);
 

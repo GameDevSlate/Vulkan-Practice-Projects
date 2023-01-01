@@ -101,9 +101,9 @@ void HelloTriangleApplication::CreateInstance()
 	// Creating the application info
 	vk::ApplicationInfo application_info{
 		.pApplicationName = "Hello Triangle",
-		.applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+		.applicationVersion = VK_MAKE_API_VERSION(0, 1, 3, 0),
 		.pEngineName = "No Engine",
-		.engineVersion = VK_MAKE_VERSION(1, 0, 0),
+		.engineVersion = VK_MAKE_API_VERSION(0, 1, 3, 0),
 		.apiVersion = VK_API_VERSION_1_3
 	};
 

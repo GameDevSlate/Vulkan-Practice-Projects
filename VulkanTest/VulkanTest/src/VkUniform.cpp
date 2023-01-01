@@ -30,7 +30,7 @@ void VkUniform::CreateDescriptorSetLayout(const vk::Device device, vk::Descripto
 		throw std::runtime_error("Failed to create descriptor set layout!");
 }
 
-void VkUniform::CreateDescriptorPool(vk::Device device, vk::DescriptorPool& descriptor_pool)
+void VkUniform::CreateDescriptorPool(const vk::Device device, vk::DescriptorPool& descriptor_pool)
 {
 	vk::DescriptorPoolSize pool_size{
 		.descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT)
@@ -50,7 +50,7 @@ void VkUniform::CreateDescriptorSets(const vk::Device device,
                                      std::vector<vk::DescriptorSet>& descriptor_sets,
                                      const vk::DescriptorSetLayout descriptor_set_layout,
                                      const vk::DescriptorPool descriptor_pool,
-                                     const std::vector<vk::Buffer> uniform_buffers)
+                                     const std::vector<vk::Buffer>& uniform_buffers)
 {
 	std::vector layouts(MAX_FRAMES_IN_FLIGHT, descriptor_set_layout);
 
