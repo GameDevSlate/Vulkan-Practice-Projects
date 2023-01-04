@@ -4,7 +4,6 @@
 #include<vector>
 #include <GLFW/glfw3.h>
 #include<vulkan/vulkan.hpp>
-#include"LogicalDevice.h"
 
 class PhysicalDevice
 {

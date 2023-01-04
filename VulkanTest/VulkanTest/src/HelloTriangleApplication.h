@@ -8,6 +8,7 @@
 #include<vector>
 #include<GLFW/glfw3.h>
 
+#include "Texture.h"
 #include"Vertex.h"
 
 constexpr uint32_t WIDTH = 800;

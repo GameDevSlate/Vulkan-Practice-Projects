@@ -28,7 +28,6 @@ public:
 	                                 vk::Device device,
 	                                 vk::PhysicalDevice physical_device);
 
-private:
 	static void CreateBuffer(vk::Device device,
 	                         vk::PhysicalDevice physical_device,
 	                         vk::DeviceSize size,
@@ -37,6 +36,7 @@ private:
 	                         vk::Buffer& buffer,
 	                         vk::DeviceMemory& buffer_memory);
 
+private:
 	static void CopyBuffer(vk::Device device,
 	                       vk::CommandPool command_pool,
 	                       vk::Queue graphics_queue,
@@ -47,4 +47,6 @@ private:
 	static uint32_t FindMemoryType(uint32_t type_filter,
 	                               vk::MemoryPropertyFlags properties,
 	                               vk::PhysicalDevice physical_device);
+
+	friend class Texture;
 };

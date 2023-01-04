@@ -134,7 +134,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;$(ProjectDir)Dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\STB;$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;$(ProjectDir)Dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -153,7 +153,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;$(ProjectDir)Dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies\STB;$(ProjectDir)Dependencies\Vulkan\include;$(ProjectDir)Dependencies\GLFW\include;$(ProjectDir)Dependencies\GLM\include;$(ProjectDir)Dependencies\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -178,6 +178,7 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderLibrary.cpp" />
     <ClCompile Include="src\SwapChain.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\ValidationLayers.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
     <ClCompile Include="src\VkUniform.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\ShaderLibrary.h" />
     <ClInclude Include="src\SwapChain.h" />
+    <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\UniformBufferObject.h" />
     <ClInclude Include="src\ValidationLayers.h" />
     <ClInclude Include="src\Vertex.h" />

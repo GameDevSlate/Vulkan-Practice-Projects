@@ -90,6 +90,8 @@ void HelloTriangleApplication::InitVulkan()
 	CreateCommandBuffers();
 
 	CreateSyncObjects();
+
+	Texture test_texture("texture.jpg", m_device, m_physicalDevice);
 }
 
 void HelloTriangleApplication::CreateInstance()
