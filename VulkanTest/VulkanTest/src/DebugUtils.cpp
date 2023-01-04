@@ -81,7 +81,6 @@ VKAPI_ATTR vk::Bool32 VKAPI_CALL DebugUtils::DebugCallback(vk::DebugUtilsMessage
 		case vk::DebugUtilsMessageSeverityFlagBitsEXT::eError:
 			VK_CORE_ERROR("{0}: {1}", message_type, p_callback_data->pMessage);
 			break;
-		default: [[fallthrough]];
 	}
 
 	return VK_FALSE;
