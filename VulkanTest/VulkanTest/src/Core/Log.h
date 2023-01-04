@@ -45,13 +45,13 @@ OStream& operator<<(OStream& os, glm::qua<T, Q> quaternion)
 // Core log macros
 #define VK_CORE_TRACE(...)		::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define VK_CORE_INFO(...)		::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define VK_CORE_WARN(...)		::Log::GetCoreLogger()->warn(__VA_ARGS__);
-#define VK_CORE_ERROR(...)		::Log::GetCoreLogger()->error(__VA_ARGS__);
-#define VK_CORE_CRITICAL(...)	::Log::GetCoreLogger()->critical(__VA_ARGS__);
+#define VK_CORE_WARN(...)		::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define VK_CORE_ERROR(...)		::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define VK_CORE_CRITICAL(...)	::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 // Client log macros
 #define VK_TRACE(...)		::Log::GetClientLogger()->trace(__VA_ARGS__)
 #define VK_INFO(...)		::Log::GetClientLogger()->info(__VA_ARGS__)
-#define VK_WARN(...)		::Log::GetClientLogger()->warn(__VA_ARGS__);
-#define VK_ERROR(...)		::Log::GetClientLogger()->error(__VA_ARGS__);
-#define VK_CRITICAL(...)	::Log::GetClientLogger()->critical(__VA_ARGS__);
+#define VK_WARN(...)		::Log::GetClientLogger()->warn(__VA_ARGS__)
+#define VK_ERROR(...)		::Log::GetClientLogger()->error(__VA_ARGS__)
+#define VK_CRITICAL(...)	::Log::GetClientLogger()->critical(__VA_ARGS__)

@@ -1,7 +1,11 @@
 #define VULKAN_HPP_NO_CONSTRUCTORS
 #include "DebugUtils.h"
+
 #include<iostream>
+
 #include "ValidationLayers.h"
+#include "Core/Assert.h"
+#include "Core/Log.h"
 
 void DebugUtils::PopulateMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& create_info)
 {
@@ -61,7 +65,24 @@ VKAPI_ATTR vk::Bool32 VKAPI_CALL DebugUtils::DebugCallback(vk::DebugUtilsMessage
                                                            p_callback_data,
                                                            void* p_user_data)
 {
-	std::cerr << std::endl << "Validation layer:" << p_callback_data->pMessage << std::endl;
+	std::string message_type = to_string(message_types);
+
+	switch (messages_severity) {
+
+		case vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose:
+			VK_CORE_TRACE("{0}: {1}", message_type, p_callback_data->pMessage);
+			break;
+		case vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo:
+			VK_CORE_INFO("{0}: {1}", message_type, p_callback_data->pMessage);
+			break;
+		case vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning:
+			VK_CORE_WARN("{0}: {1}", message_type, p_callback_data->pMessage);
+			break;
+		case vk::DebugUtilsMessageSeverityFlagBitsEXT::eError:
+			VK_CORE_ERROR("{0}: {1}", message_type, p_callback_data->pMessage);
+			break;
+		default: [[fallthrough]];
+	}
 
 	return VK_FALSE;
 }
