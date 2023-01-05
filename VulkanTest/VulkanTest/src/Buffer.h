@@ -48,5 +48,20 @@ private:
 	                               vk::MemoryPropertyFlags properties,
 	                               vk::PhysicalDevice physical_device);
 
+	static vk::CommandBuffer BeginSingleTimeCommands(vk::Device device, vk::CommandPool command_pool);
+
+	static void EndSingleTimeCommands(vk::Device device,
+	                                  vk::CommandPool command_pool,
+	                                  const vk::Queue& queue,
+	                                  vk::CommandBuffer command_buffer);
+
+	static void CopyBufferToImage(vk::Device device,
+	                              vk::CommandPool command_pool,
+	                              const vk::Queue& queue,
+	                              vk::Buffer buffer,
+	                              vk::Image image,
+	                              uint32_t width,
+	                              uint32_t height);
+
 	friend class Texture;
 };

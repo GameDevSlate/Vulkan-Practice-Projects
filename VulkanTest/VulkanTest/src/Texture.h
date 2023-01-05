@@ -4,7 +4,13 @@
 class Texture
 {
 public:
-	Texture(const std::string& file_path, vk::Device device, vk::PhysicalDevice physical_device);
+	Texture(const std::string& file_path,
+	        vk::Device device,
+	        vk::PhysicalDevice physical_device,
+	        vk::CommandPool command_pool,
+	        const vk::Queue& queue);
+
+	void Destroy(vk::Device device) const;
 
 private:
 	static void CreateImage(vk::Device device,
@@ -18,11 +24,15 @@ private:
 	                        vk::Image& image,
 	                        vk::DeviceMemory& image_memory);
 
+	static void TransitionImageLayout(vk::Device device,
+	                                  vk::CommandPool command_pool,
+	                                  const vk::Queue& graphics_queue,
+	                                  vk::Image image,
+	                                  vk::Format format,
+	                                  vk::ImageLayout old_layout,
+	                                  vk::ImageLayout new_layout);
+
 	const char* m_filePath;
-
-	vk::Buffer m_stagingBuffer;
-
-	vk::DeviceMemory m_stagingBufferMemory;
 
 	vk::Image m_textureImage;
 

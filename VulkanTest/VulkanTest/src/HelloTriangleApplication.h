@@ -5,6 +5,7 @@
 #include<vulkan/vulkan.hpp>
 #pragma warning(pop)
 
+#include <memory>
 #include<vector>
 #include<GLFW/glfw3.h>
 
@@ -117,6 +118,8 @@ private:
 	bool m_frameBufferResized = false;
 
 	uint32_t m_currentFrame = 0;
+
+	std::unique_ptr<Texture> m_testTexture = nullptr;
 
 	const std::vector<Vertex> m_vertices = {
 		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},

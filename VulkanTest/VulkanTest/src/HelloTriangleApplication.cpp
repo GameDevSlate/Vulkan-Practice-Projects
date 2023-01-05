@@ -74,6 +74,9 @@ void HelloTriangleApplication::InitVulkan()
 
 	PhysicalDevice::CreateCommandPool(m_commandPool, m_physicalDevice, m_device);
 
+	m_testTexture = std::make_unique<Texture>("texture.jpg", m_device, m_physicalDevice, m_commandPool,
+	                                          m_graphicsQueue);
+
 	Buffer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_device, m_physicalDevice, m_vertices,
 	                           m_commandPool, m_graphicsQueue);
 
@@ -90,8 +93,6 @@ void HelloTriangleApplication::InitVulkan()
 	CreateCommandBuffers();
 
 	CreateSyncObjects();
-
-	Texture test_texture("texture.jpg", m_device, m_physicalDevice);
 }
 
 void HelloTriangleApplication::CreateInstance()
@@ -394,6 +395,8 @@ std::vector<const char*> HelloTriangleApplication::GetRequiredExtensions()
 void HelloTriangleApplication::CleanUp()
 {
 	CleanUpSwapChain();
+
+	m_testTexture->Destroy(m_device);
 
 	// Destroy the uniform buffers and the memory related to them
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
