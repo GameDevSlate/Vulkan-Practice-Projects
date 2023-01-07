@@ -32,7 +32,9 @@ void LogicalDevice::CreateLogicalDevice(
 	}
 
 	// Get the physical device features
-	vk::PhysicalDeviceFeatures device_features{};
+	vk::PhysicalDeviceFeatures device_features{
+		.samplerAnisotropy = static_cast<vk::Bool32>(true)
+	};
 
 	// Make the Logical Device create info
 	vk::DeviceCreateInfo create_info{

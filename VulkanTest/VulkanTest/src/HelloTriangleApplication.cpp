@@ -77,6 +77,10 @@ void HelloTriangleApplication::InitVulkan()
 	m_testTexture = std::make_unique<Texture>("texture.jpg", m_device, m_physicalDevice, m_commandPool,
 	                                          m_graphicsQueue);
 
+	m_testTexture->CreateTextureImageView(m_device);
+
+	m_testTexture->CreateTextureSampler(m_device, m_physicalDevice);
+
 	Buffer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_device, m_physicalDevice, m_vertices,
 	                           m_commandPool, m_graphicsQueue);
 

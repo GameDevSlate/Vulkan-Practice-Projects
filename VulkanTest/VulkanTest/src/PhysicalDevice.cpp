@@ -79,7 +79,10 @@ bool PhysicalDevice::IsDeviceSuitable(const vk::PhysicalDevice device)
 		swap_chain_adequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 	}
 
-	return indices.IsComplete() && extensionsSupported && swap_chain_adequate;
+	vk::PhysicalDeviceFeatures supported_features;
+	device.getFeatures(&supported_features);
+
+	return indices.IsComplete() && extensionsSupported && swap_chain_adequate && supported_features.samplerAnisotropy;
 }
 
 unsigned PhysicalDevice::RateDeviceSuitability(vk::PhysicalDevice device)
@@ -117,6 +120,9 @@ unsigned PhysicalDevice::RateDeviceSuitability(vk::PhysicalDevice device)
 
 		score += !formats.empty() && !present_modes.empty() ? 500 : 0;
 	}
+
+	// Add to the score if this device has anisotropic filtering
+	score += device_features.samplerAnisotropy ? 500 : 0;
 
 	// Application can't function without geometry shaders
 	if (!device_features.geometryShader)

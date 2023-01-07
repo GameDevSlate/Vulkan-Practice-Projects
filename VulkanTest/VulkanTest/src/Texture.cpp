@@ -56,8 +56,43 @@ Texture::Texture(const std::string& file_path,
 	device.freeMemory(staging_buffer_memory, nullptr);
 }
 
+void Texture::CreateTextureImageView(const vk::Device device)
+{
+	m_textureImageView = CreateImageView(device, m_textureImage, vk::Format::eR8G8B8A8Srgb);
+}
+
+void Texture::CreateTextureSampler(vk::Device device, const vk::PhysicalDevice physical_device)
+{
+	vk::PhysicalDeviceProperties properties;
+
+	physical_device.getProperties(&properties);
+
+	vk::SamplerCreateInfo sampler_info{
+		.magFilter = vk::Filter::eLinear,
+		.minFilter = vk::Filter::eLinear,
+		.mipmapMode = vk::SamplerMipmapMode::eLinear,
+		.addressModeU = vk::SamplerAddressMode::eRepeat,
+		.addressModeV = vk::SamplerAddressMode::eRepeat,
+		.addressModeW = vk::SamplerAddressMode::eRepeat,
+		.mipLodBias = 0.0f,
+		.anisotropyEnable = static_cast<vk::Bool32>(true),
+		.maxAnisotropy = properties.limits.maxSamplerAnisotropy,
+		.compareEnable = static_cast<vk::Bool32>(false),
+		.compareOp = vk::CompareOp::eAlways,
+		.minLod = 0.0f,
+		.maxLod = 0.0f,
+		.borderColor = vk::BorderColor::eIntOpaqueBlack,
+		.unnormalizedCoordinates = static_cast<vk::Bool32>(false)
+	};
+
+	if (device.createSampler(&sampler_info, nullptr, &m_textureSampler) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create texture sampler!");
+}
+
 void Texture::Destroy(const vk::Device device) const
 {
+	device.destroySampler(m_textureSampler, nullptr);
+	device.destroyImageView(m_textureImageView, nullptr);
 	device.destroyImage(m_textureImage, nullptr);
 	device.freeMemory(m_textureImageMemory, nullptr);
 }
@@ -108,6 +143,29 @@ void Texture::CreateImage(const vk::Device device,
 		throw std::runtime_error("Failed to allocate image memory!");
 
 	device.bindImageMemory(image, image_memory, 0);
+}
+
+vk::ImageView Texture::CreateImageView(const vk::Device device, vk::Image image, vk::Format format)
+{
+	vk::ImageViewCreateInfo view_info{
+		.image = image,
+		.viewType = vk::ImageViewType::e2D,
+		.format = format,
+		.subresourceRange{
+			.aspectMask = vk::ImageAspectFlagBits::eColor,
+			.baseMipLevel = 0,
+			.levelCount = 1,
+			.baseArrayLayer = 0,
+			.layerCount = 1
+		}
+	};
+
+	vk::ImageView image_view;
+
+	if (device.createImageView(&view_info, nullptr, &image_view) != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create texture image view!");
+
+	return image_view;
 }
 
 void Texture::TransitionImageLayout(const vk::Device device,

@@ -10,6 +10,10 @@ public:
 	        vk::CommandPool command_pool,
 	        const vk::Queue& queue);
 
+	void CreateTextureImageView(vk::Device device);
+
+	void CreateTextureSampler(vk::Device device, vk::PhysicalDevice physical_device);
+
 	void Destroy(vk::Device device) const;
 
 private:
@@ -32,9 +36,17 @@ private:
 	                                  vk::ImageLayout old_layout,
 	                                  vk::ImageLayout new_layout);
 
+	static vk::ImageView CreateImageView(vk::Device device, vk::Image image, vk::Format format);
+
 	const char* m_filePath;
 
 	vk::Image m_textureImage;
 
 	vk::DeviceMemory m_textureImageMemory;
+
+	vk::ImageView m_textureImageView;
+
+	vk::Sampler m_textureSampler;
+
+	friend class SwapChain;
 };

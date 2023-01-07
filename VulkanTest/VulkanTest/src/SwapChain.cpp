@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 
 #include "PhysicalDevice.h"
+#include "Texture.h"
 
 /**
  * \brief Creates and allocates a swap chain, while also allocating its images, format, and extent.
@@ -98,37 +99,15 @@ void SwapChain::CreateSwapChain(vk::SwapchainKHR& swap_chain,
  */
 void SwapChain::CreateImageViews(std::vector<vk::ImageView>& image_views,
                                  const vk::Device device,
-                                 std::vector<vk::Image> images,
-                                 vk::Format image_format)
+                                 const std::vector<vk::Image> images,
+                                 const vk::Format image_format)
 {
 	// Populate the amount of available swap chain image views
 	// based on the amount of swap chain images
 	image_views.resize(images.size());
 
-	for (size_t i = 0; i < images.size(); i++) {
-
-		vk::ImageViewCreateInfo create_info{
-			.image = images[i],
-			.viewType = vk::ImageViewType::e2D,
-			.format = image_format,
-			.components = {
-				.r = vk::ComponentSwizzle::eIdentity,
-				.g = vk::ComponentSwizzle::eIdentity,
-				.b = vk::ComponentSwizzle::eIdentity,
-				.a = vk::ComponentSwizzle::eIdentity
-			},
-			.subresourceRange = {
-				.aspectMask = vk::ImageAspectFlagBits::eColor,
-				.baseMipLevel = 0,
-				.levelCount = 1,
-				.baseArrayLayer = 0,
-				.layerCount = 1
-			}
-		};
-
-		if (device.createImageView(&create_info, nullptr, &image_views[i]) != vk::Result::eSuccess)
-			throw std::runtime_error("Failed to create image views");
-	}
+	for (size_t i = 0; i < images.size(); i++)
+		image_views[i] = Texture::CreateImageView(device, images[i], image_format);
 }
 
 /**
