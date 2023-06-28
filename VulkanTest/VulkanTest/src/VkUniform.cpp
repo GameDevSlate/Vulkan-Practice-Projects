@@ -21,9 +21,19 @@ void VkUniform::CreateDescriptorSetLayout(const vk::Device device, vk::Descripto
 		.pImmutableSamplers = nullptr
 	};
 
+	vk::DescriptorSetLayoutBinding sample_layout_binding{
+		.binding = 1,
+		.descriptorType = vk::DescriptorType::eCombinedImageSampler,
+		.descriptorCount = 1,
+		.stageFlags = vk::ShaderStageFlagBits::eFragment,
+		.pImmutableSamplers = nullptr,
+	};
+
+	std::array bindings = {ubo_layout_binding, sample_layout_binding};
+
 	vk::DescriptorSetLayoutCreateInfo layout_info{
-		.bindingCount = 1,
-		.pBindings = &ubo_layout_binding
+		.bindingCount = static_cast<uint32_t>(bindings.size()),
+		.pBindings = bindings.data()
 	};
 
 	if (device.createDescriptorSetLayout(&layout_info, nullptr, &descriptor_set_layout) != vk::Result::eSuccess)
@@ -32,14 +42,18 @@ void VkUniform::CreateDescriptorSetLayout(const vk::Device device, vk::Descripto
 
 void VkUniform::CreateDescriptorPool(const vk::Device device, vk::DescriptorPool& descriptor_pool)
 {
-	vk::DescriptorPoolSize pool_size{
-		.descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT)
-	};
+	std::array<vk::DescriptorPoolSize, 2> pool_sizes{};
+
+	pool_sizes[0].type = vk::DescriptorType::eUniformBuffer;
+	pool_sizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+
+	pool_sizes[1].type = vk::DescriptorType::eCombinedImageSampler;
+	pool_sizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
 	vk::DescriptorPoolCreateInfo pool_info{
 		.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT),
-		.poolSizeCount = 1,
-		.pPoolSizes = &pool_size
+		.poolSizeCount = static_cast<uint32_t>(pool_sizes.size()),
+		.pPoolSizes = pool_sizes.data()
 	};
 
 	if (device.createDescriptorPool(&pool_info, nullptr, &descriptor_pool) != vk::Result::eSuccess)
@@ -48,6 +62,7 @@ void VkUniform::CreateDescriptorPool(const vk::Device device, vk::DescriptorPool
 
 void VkUniform::CreateDescriptorSets(const vk::Device device,
                                      std::vector<vk::DescriptorSet>& descriptor_sets,
+                                     const Texture& texture,
                                      const vk::DescriptorSetLayout descriptor_set_layout,
                                      const vk::DescriptorPool descriptor_pool,
                                      const std::vector<vk::Buffer>& uniform_buffers)
@@ -66,27 +81,35 @@ void VkUniform::CreateDescriptorSets(const vk::Device device,
 		throw std::runtime_error("Failed to allocate descriptor sets");
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-
 		vk::DescriptorBufferInfo buffer_info{
 			.buffer = uniform_buffers[i],
 			.offset = 0,
 			.range = sizeof(UniformBufferObject)
 		};
 
-		vk::WriteDescriptorSet descriptor_write{
-			.dstSet = descriptor_sets[i],
-			.dstBinding = 0,
-			.dstArrayElement = 0,
-			.descriptorCount = 1,
-			.descriptorType = vk::DescriptorType::eUniformBuffer,
-			// Optional
-			.pImageInfo = nullptr,
-			.pBufferInfo = &buffer_info,
-			// Optional
-			.pTexelBufferView = nullptr
+		vk::DescriptorImageInfo image_info{
+			.sampler = texture.m_textureSampler,
+			.imageView = texture.m_textureImageView,
+			.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal,
 		};
 
-		device.updateDescriptorSets(1, &descriptor_write, 0, nullptr);
+		std::array<vk::WriteDescriptorSet, 2> descriptor_writes{};
+
+		descriptor_writes[0].dstSet = descriptor_sets[i];
+		descriptor_writes[0].dstBinding = 0;
+		descriptor_writes[0].dstArrayElement = 0;
+		descriptor_writes[0].descriptorType = vk::DescriptorType::eUniformBuffer;
+		descriptor_writes[0].descriptorCount = 1;
+		descriptor_writes[0].pBufferInfo = &buffer_info;
+
+		descriptor_writes[1].dstSet = descriptor_sets[i];
+		descriptor_writes[1].dstBinding = 1;
+		descriptor_writes[1].dstArrayElement = 0;
+		descriptor_writes[1].descriptorType = vk::DescriptorType::eCombinedImageSampler;
+		descriptor_writes[1].descriptorCount = 1;
+		descriptor_writes[1].pImageInfo = &image_info;
+
+		device.updateDescriptorSets(descriptor_writes.size(), descriptor_writes.data(), 0, nullptr);
 	}
 }
 

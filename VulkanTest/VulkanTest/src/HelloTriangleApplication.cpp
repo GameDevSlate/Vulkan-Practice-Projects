@@ -39,7 +39,7 @@ void HelloTriangleApplication::InitWindow()
 
 void HelloTriangleApplication::FrameBufferResizeCallback(GLFWwindow* window, int width, int height)
 {
-	auto app = reinterpret_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
+	auto app = static_cast<HelloTriangleApplication*>(glfwGetWindowUserPointer(window));
 	app->m_frameBufferResized = true;
 }
 
@@ -81,18 +81,18 @@ void HelloTriangleApplication::InitVulkan()
 
 	m_testTexture->CreateTextureSampler(m_device, m_physicalDevice);
 
-	Buffer::CreateVertexBuffer(m_vertexBuffer, m_vertexBufferMemory, m_device, m_physicalDevice, m_vertices,
-	                           m_commandPool, m_graphicsQueue);
+	Buffer::CreatePrimitiveBuffer(m_vertexBuffer, m_vertexBufferMemory, m_device, m_physicalDevice, m_vertices,
+	                              m_commandPool, m_graphicsQueue);
 
-	Buffer::CreateIndexBuffer(m_indexBuffer, m_indexBufferMemory, m_device, m_physicalDevice, m_indices, m_commandPool,
-	                          m_graphicsQueue);
+	Buffer::CreatePrimitiveBuffer(m_indexBuffer, m_indexBufferMemory, m_device, m_physicalDevice, m_indices,
+	                              m_commandPool, m_graphicsQueue);
 
 	Buffer::CreateUniformBuffers(m_uniformBuffers, m_uniformBuffersMemory, m_device, m_physicalDevice);
 
 	VkUniform::CreateDescriptorPool(m_device, m_descriptorPool);
 
-	VkUniform::CreateDescriptorSets(m_device, m_descriptorSets, m_descriptorSetLayout, m_descriptorPool,
-	                                m_uniformBuffers);
+	VkUniform::CreateDescriptorSets(m_device, m_descriptorSets, *m_testTexture, m_descriptorSetLayout,
+	                                m_descriptorPool, m_uniformBuffers);
 
 	CreateCommandBuffers();
 
@@ -268,7 +268,7 @@ void HelloTriangleApplication::RecordCommandBuffer(const vk::CommandBuffer comma
 	command_buffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_pipelineLayout, 0, 1,
 	                                  &m_descriptorSets[m_currentFrame], 0, nullptr);
 
-	command_buffer.drawIndexed(static_cast<uint32_t>(m_indices.size()), 1, 0, 0, 0);
+	command_buffer.drawIndexed(m_indices.size(), 1, 0, 0, 0);
 
 	// End recording commands
 
@@ -290,7 +290,6 @@ void HelloTriangleApplication::CreateSyncObjects()
 	};
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-
 		if (m_device.createSemaphore(&semaphore_info, nullptr, &m_imageAvailableSemaphores[i]) != vk::Result::eSuccess
 		    ||
 		    m_device.createSemaphore(&semaphore_info, nullptr, &m_renderFinishedSemaphores[i]) != vk::Result::eSuccess

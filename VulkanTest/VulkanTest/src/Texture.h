@@ -49,4 +49,6 @@ private:
 	vk::Sampler m_textureSampler;
 
 	friend class SwapChain;
+
+	friend class VkUniform;
 };

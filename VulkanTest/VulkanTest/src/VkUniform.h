@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <vulkan/vulkan.hpp>
 
+#include "Texture.h"
+
 class VkUniform
 {
 public:
@@ -10,6 +12,7 @@ public:
 
 	static void CreateDescriptorSets(vk::Device device,
 	                                 std::vector<vk::DescriptorSet>& descriptor_sets,
+	                                 const Texture& texture,
 	                                 vk::DescriptorSetLayout descriptor_set_layout,
 	                                 vk::DescriptorPool descriptor_pool,
 	                                 const std::vector<vk::Buffer>& uniform_buffers);
